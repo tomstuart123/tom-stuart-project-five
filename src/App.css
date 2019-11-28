@@ -1,9 +1,7 @@
 .App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
+  width: 85%;
+  padding: 30px 0;
+  margin: 0 auto;
 }
 
 .App-header {
@@ -19,4 +17,64 @@
 
 .App-link {
   color: #09d3ac;
+}
+
+/* Structure */
+.firstPage {
+  margin-top: 50px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.firstPage h1 {
+  font-size: 3rem;
+}
+
+.cubed {
+  font-size: 1rem;
+}
+
+/* Input Form */
+.userMessage, .messageInputForm button, .clear {
+  height: 25px;
+  width: 75%;
+  margin: 0px auto;
+  margin-top: 10px;
+}
+
+.messageInputForm {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+/* Messages Box */
+.messagesBox {
+    min-height: 300px;
+    max-height: 300px;
+    width: 75%;
+    border: 1px black solid;
+    text-align: left;
+    margin: 20px auto;
+    overflow-y: scroll;
+
+}
+
+.messagesBox li {
+  list-style-type: none;
+  margin-top: 5px;
+}
+
+.messageID {
+  font-weight: bold;
+}
+
+.clear {
+  margin-top: 0px;
+  margin-bottom: 10px;
+}
+
+#hide {
+  display: none;
 }
