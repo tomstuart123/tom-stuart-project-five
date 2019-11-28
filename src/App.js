@@ -36,15 +36,14 @@ class App extends Component {
     userNameResponse = userNameResponse + randomUserId;
 
     // pull firebase
-    const dbRef = firebase.database().ref(); 
-    // always listen to firebase database. On changes to database, update state
-    dbRef.on('value', (chatroom) => {
+    const chatrooms = firebase.database().ref('chatrooms'); 
+    // always listen to firebase database chatrooms. On changes to database, update state
+    chatrooms.on('value', (chatroom) => {
       const chatrooms = chatroom.val();
       const chatroom1 = chatrooms.chatroom1;
       let messageArray = [];
       for (let message in chatroom1) {
         messageArray.push(chatroom1[message])
-        // currentTimeArray.push(chatroom1[message])
       }
       // when chatroom changes, push the entire chatroom message to state
       this.setState({
@@ -65,7 +64,8 @@ class App extends Component {
   handleSubmit = (event) => {
     event.preventDefault();
     // set firebase object of chatroom
-    const chatroom1 = firebase.database().ref('chatroom1');
+    const chatrooms = firebase.database().ref('chatrooms');
+    const chatroom1 = chatrooms.child('chatroom1');
     // pull username and message
     const enqueuedMessage = this.state.userInput;
 
@@ -82,10 +82,10 @@ class App extends Component {
     // push message object to firebase if message isn't empty
     if (enqueuedMessage) {
       // store the pushID given to us from firebase
-      const pushID = chatroom1.push(messageObject);
+      const pushID = chatrooms.child('chatroom1').push(messageObject);
       // update the firebase key with variable pushID
       messageObject.userFirebaseKey = pushID.key;
-      chatroom1.child(pushID.key).update(messageObject);
+      chatrooms.child('chatroom1').child(pushID.key).update(messageObject);
 
       this.setState({
         userInput: '',
@@ -126,11 +126,12 @@ class App extends Component {
   }
 
   removeChat = (event) => {
-    const chatroom1 = firebase.database().ref('chatroom1');
+    const chatrooms = firebase.database().ref('chatrooms');
+    const chatroom1 = chatrooms.child('chatroom1')
     const userCertain = window.confirm('Are you sure you want to delete the chat for all participants?')
 
     if (userCertain) {
-      chatroom1.set({
+      chatrooms.child('chatroom1').set({
         0: {
           userID: "Chattr Bot",
           userMessage: "Start chat below"
@@ -139,17 +140,17 @@ class App extends Component {
     } else {
       return
     }
-    
+
   }
 
   removeMessage = (event) => {
     // pull the firebase chatroom1 necessary
-    const chatroom1 = firebase.database().ref('chatroom1');
+    const chatrooms = firebase.database().ref('chatrooms');
     // compare current username vs. username held in class on the event clicked on (see total messages span)
     if (this.state.userName === event.target.className) 
     // if they are the same, then go into database and find the clicked on message's firebase key. In this firebase key area of your database, delete it
     {
-      chatroom1.child(event.target.id).remove();  
+      chatrooms.child('chatroom1').child(event.target.id).remove();  
     } 
     // else alert the user that they can't delete other people's messages
     else {
