@@ -1,3 +1,5 @@
+
+
 // OVERVIEW
     // MVP - a react group chat app with firebase. 
         // Features - users can go onto a website and write messages to each other on different computers
@@ -27,12 +29,26 @@
 
     
 
-    // STRETCH GOAL 1
+    // STRETCH GOAL phase 1
         // Make everyone's username different by either 
             // i) adding their firebaseID (made up by firebase) added to the username they give us
             // ii) or giving a choice of colour at the beginning
+        // Add hide or remove buttons from the chat
+        // Add date / time to each message
+        // Remove only your individual messages.
 
-    // STRETCH GOAL 2
+
+// NEXT /////////////////////////////////
+
+ 
+     
+
+    
+
+
+
+
+
         // Make a create chat room feature in firebase and join multiple rooms
             
         // Create room room

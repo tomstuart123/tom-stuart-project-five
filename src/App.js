@@ -16,6 +16,8 @@ class App extends Component {
       userName: 'tom',
       hideClass: true,
       hideClassName: '',
+      currentTime: '',
+      userFirebaseKey: '',
     }
 
   
@@ -31,7 +33,6 @@ class App extends Component {
 
     //add to the name given by a user a random generated number to ensure people are different
     const randomUserId = Math.floor(Math.random() * 100);
-    console.log(randomUserId)
     userNameResponse = userNameResponse + randomUserId;
 
     // pull firebase
@@ -43,8 +44,8 @@ class App extends Component {
       let messageArray = [];
       for (let message in chatroom1) {
         messageArray.push(chatroom1[message])
+        // currentTimeArray.push(chatroom1[message])
       }
-      console.log(messageArray);
       // when chatroom changes, push the entire chatroom message to state
       this.setState({
         messageList: messageArray,
@@ -67,17 +68,37 @@ class App extends Component {
     const chatroom1 = firebase.database().ref('chatroom1');
     // pull username and message
     const enqueuedMessage = this.state.userInput;
+
+    // find latest time / date
+    const currentTime = Date(Date.now()).toString();
+
+
     const messageObject = {
       userID: this.state.userName,
       userMessage: enqueuedMessage,
+      currentTime: currentTime,
+      userFirebaseKey: '',
     }
     // push message object to firebase if message isn't empty
     if (enqueuedMessage) {
-      chatroom1.push(messageObject);
+      // store the pushID given to us from firebase
+      const pushID = chatroom1.push(messageObject);
+      // update the firebase key with variable pushID
+      messageObject.userFirebaseKey = pushID.key;
+      chatroom1.child(pushID.key).update(messageObject);
+
       this.setState({
         userInput: '',
+        currentTime: '',
+        userFirebaseKey: '',
       })
     }
+
+    // on submit - scroll to the bottom of the page after a delay (allow message to be appended)
+    var element = document.querySelector('.lastMessage');
+    setTimeout(function () { 
+      element.scrollIntoView(); 
+    }, 100);
   }
 
   changeHideState = (event) => {
@@ -85,7 +106,6 @@ class App extends Component {
     this.setState({
       hideClass: !this.state.hideClass,
     })
-    console.log('clicked', this.state.hideClass)
     //run hidechat
     this.hideChat();
   }
@@ -122,6 +142,23 @@ class App extends Component {
     
   }
 
+  removeMessage = (event) => {
+    // pull the firebase chatroom1 necessary
+    const chatroom1 = firebase.database().ref('chatroom1');
+    // compare current username vs. username held in class on the event clicked on (see total messages span)
+    if (this.state.userName === event.target.className) 
+    // if they are the same, then go into database and find the clicked on message's firebase key. In this firebase key area of your database, delete it
+    {
+      chatroom1.child(event.target.id).remove();  
+    } 
+    // else alert the user that they can't delete other people's messages
+    else {
+      alert(`You can only delete your own messages`)
+    }
+  }
+
+  
+
 
   // THREE.JS STRETCH
   // runThree = () => {
@@ -132,26 +169,27 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <div className='firstPage'>
           
-          <h1>ChatCubed<span class='cubed'>3</span></h1>
+          <h1>Chattr<span className='cubed'>3</span></h1>
           
           <MessageInput userInput={this.state.userInput} trackChanges={this.handleChange} submitStore={this.handleSubmit} />        
           <div className='messagesBox'>
-            <ul>
+            <div>
               {this.state.messageList.map((messageObject) => {
                 return (
-                  <TotalMessages userID={messageObject.userID} userMessage={messageObject.userMessage} hidden={this.state.hideClassName}/>
+                  <TotalMessages userID={messageObject.userID} userMessage={messageObject.userMessage} hidden={this.state.hideClassName} sendDate={messageObject.currentTime} cancelMessage={this.removeMessage} firebaseKey={messageObject.userFirebaseKey}/>
                 )
               }
               )}
-            </ul>
-            
+            {/* empty div so we can scroll to the newest message on message send */}
+            <div className='lastMessage'>..</div>
+
+            </div>
           </div>
           <button className="clear" onClick={this.changeHideState}>Hide / UnHide chat </button>
           <button className="clear" onClick={this.removeChat}>Remove Chat Permanently for everyone </button>
 
-        </div>
+        {/* </div> */}
         
         
         
