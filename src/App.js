@@ -18,13 +18,14 @@ class App extends Component {
       userInput: '',
       userInput2: '',
       userName: 'Tom',
-      userID: '',
+      userPW: '',
       hideClass: true,
       hideClassName: '',
       currentTime: '',
       userFirebaseKey: '',
       publicJoin: false,
-      switchSign: 'Sign up'
+      switchSign: 'Sign up',
+      stop: false,
     }
 
   
@@ -56,54 +57,71 @@ class App extends Component {
     e.preventDefault();
     
     let name = this.state.userInput;
-    let id = this.state.userInput2;
+    let pw = this.state.userInput2;
     if (this.state.switchSign === 'Sign up') {
       
-      this.signUp(name, id)
+      this.signUp(name, pw)
     } else if (this.state.switchSign === 'Login') {
       this.login()
     }      
   }
 
+  signUp = (name, pw) => {
+    // on sign up - set username and password of input in the state
+    this.setState({
+      userName: name,
+      userPW: pw,
+    })    
+    // pull users area of firebase
+    const users = firebase.database().ref('users');
+    // pull current time 
+    const currentTime = Date(Date.now()).toString();
+    // hack needed a setTimeout to deliver the non-default states
+    setTimeout( () => {
+      // create object with details of sign up
+      const userObject = {
+        userID: this.state.userName,
+        userPW: this.state.userPW,
+        signUpTime: currentTime,
+      }
+      // check if someone already has both these userID / password
+      users.on('value', (users) => {
+        
+        let usersCleaned = users.val();
+        for (let user in usersCleaned) {
+          
+          if (usersCleaned[user].userID == this.state.userName && usersCleaned[user].userPW.toString() == this.state.userPW) {
+            this.setState({
+              stop: true,
+            })
+          }  
+        }
+      })
+      
+      // only run if user has input both text fields
+      if (!this.state.userPW || !this.state.userName) {
+        alert('please fill both sign in fields')
+      } 
+      // only run it if the stop status set above is set to false
+      else if (this.state.stop === true) {
+        alert('sorry someone already has that key with that user name. Try again.')
+      } 
+      // push user to database if the two conditionals above are false
+      else {
+        const pushID = users.push(userObject);
+          userObject.userFirebaseKey = pushID.key;
+          users.child(pushID.key).update(userObject);
+          this.setState({
+            userID: '',
+            userPW: '',
+          })
+      }
+    }, 50);
+  } 
+
   login = () => {
     console.log('login')
   }
-
-  signUp = (name, id) => {
-    this.setState({
-      userName: name,
-      userID: id,
-    })    
-    const users = firebase.database().ref('users');
-
-    // hack needed a setTimeout to deliver the non-default states
-    setTimeout( () => {
-      const userObject = {
-        userID: this.state.userName,
-        userPW: this.state.userID,
-      }
-
-      if (this.state.userID && this.state.userName) {
-        console.log('present')
-        const pushID = users.push(userObject);
-      } else {
-        alert('please fill both sign in fields')
-      }
-
-      //   // store the pushID given to us from firebase
-        
-      //   // update the firebase key with variable pushID
-      //   messageObject.userFirebaseKey = pushID.key;
-      //   chatrooms.child('chatroom1').child(pushID.key).update(messageObject);
-
-      //   this.setState({
-      //     userInput: '',
-      //     currentTime: '',
-      //     userFirebaseKey: '',
-      //   })
-    
-    }, 50);
-}
 
 
 
