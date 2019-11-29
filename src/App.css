@@ -89,3 +89,8 @@
   color: grey;
   cursor: pointer;
 }
+
+/* form */
+button, input {
+  margin: 7.5px 0px
+}

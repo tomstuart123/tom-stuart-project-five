@@ -1,8 +1,11 @@
 import React, { Component } from "react";
 import './App.css';
 import firebase from './firebase/firebase';
-import MessageInput from './formComponents/MessageInput';
-import TotalMessages from './formComponents/TotalMessages';
+import PageOne from './pages/PageOne'
+import LandingPage from './pages/LandingPage'
+
+
+/// CHECK THAT IT SCROLLS TO BOTTOM WHEN YOU SET LIVE SITE
 
 // import ThreeContainer from './three.js/ThreeContainer';
 
@@ -13,30 +16,127 @@ class App extends Component {
       clicked: false,
       messageList: [],
       userInput: '',
-      userName: 'tom',
+      userInput2: '',
+      userName: 'Tom',
+      userID: '',
       hideClass: true,
       hideClassName: '',
       currentTime: '',
       userFirebaseKey: '',
+      publicJoin: false,
+      switchSign: 'Sign up'
     }
 
   
   }
 
   componentDidMount() {
-    // ask for user name and store in variable
-    let userNameResponse = prompt('What is your Name?')
-    // if user doesn't give a name, make them
-    if (userNameResponse === '') {
-      userNameResponse = prompt('try again, what is your name?')
+    // if (this.state.publicJoin === true) {
+    //   this.groupChatStart();
+    // } else {
+    //   return
+    // }
+  }
+
+  // PAGE 1 FUNCTIONALITY
+
+  switchSign= () => {
+    if (this.state.switchSign === 'Sign up') {
+      this.setState({
+        switchSign: 'Login',
+      })
+    } else {
+      this.setState({
+        switchSign: 'Sign up',
+      })
     }
+  }
+  
+  signUpOrLogin = (e) => {
+    e.preventDefault();
+    
+    let name = this.state.userInput;
+    let id = this.state.userInput2;
+    if (this.state.switchSign === 'Sign up') {
+      
+      this.signUp(name, id)
+    } else if (this.state.switchSign === 'Login') {
+      this.login()
+    }      
+  }
+
+  login = () => {
+    console.log('login')
+  }
+
+  signUp = (name, id) => {
+    this.setState({
+      userName: name,
+      userID: id,
+    })    
+    const users = firebase.database().ref('users');
+
+    // hack needed a setTimeout to deliver the non-default states
+    setTimeout( () => {
+      const userObject = {
+        userID: this.state.userName,
+        userPW: this.state.userID,
+      }
+
+      if (this.state.userID && this.state.userName) {
+        console.log('present')
+        const pushID = users.push(userObject);
+      } else {
+        alert('please fill both sign in fields')
+      }
+
+      //   // store the pushID given to us from firebase
+        
+      //   // update the firebase key with variable pushID
+      //   messageObject.userFirebaseKey = pushID.key;
+      //   chatrooms.child('chatroom1').child(pushID.key).update(messageObject);
+
+      //   this.setState({
+      //     userInput: '',
+      //     currentTime: '',
+      //     userFirebaseKey: '',
+      //   })
+    
+    }, 50);
+}
+
+
+
+  adjustPublicJoinStatus = (e) => {
+    e.preventDefault();
+    // already stored their input in userInput for storage on this submit
+    let userName = this.state.userInput;
+
+    // set state to true
+    this.setState({
+      publicJoin: true,
+      userInput: '',
+    })
+    // public app start
+    this.groupChatStart(userName);
+  }
+
+  // PAGE 2 FUNCTIONALITY
+
+  groupChatStart = (name) => {
+    // ask for user name and store in variable
+    let userNameResponse = name;
+    // if user doesn't give a name, make them
+    // if (userNameResponse === '') {
+    //   userNameResponse = prompt('try again, what is your name?')
+    // }
 
     //add to the name given by a user a random generated number to ensure people are different
     const randomUserId = Math.floor(Math.random() * 100);
     userNameResponse = userNameResponse + randomUserId;
 
     // pull firebase
-    const chatrooms = firebase.database().ref('chatrooms'); 
+    const chatrooms = firebase.database().ref('chatrooms');
     // always listen to firebase database chatrooms. On changes to database, update state
     chatrooms.on('value', (chatroom) => {
       const chatrooms = chatroom.val();
@@ -45,28 +145,46 @@ class App extends Component {
       for (let message in chatroom1) {
         messageArray.push(chatroom1[message])
       }
+      console.log(messageArray)
       // when chatroom changes, push the entire chatroom message to state
       this.setState({
         messageList: messageArray,
         userName: userNameResponse,
       })
-
+      let element = document.querySelector('.lastMessage');
+      setTimeout(function () {
+        element.scrollIntoView();
+      }, 100);
     })
   }
 
   handleChange = (event) => {
     // when input text box changes, update state of the userInput dynamically
-    this.setState({
-      userInput: event.target.value
-    })
+
+    // if its the signIn part, update userInput one for usage
+    if (event.target.className === 'signInName') {
+        this.setState({
+        userInput: event.target.value
+        })
+    // if its the key part, update userInput one for usage
+
+    } else if (event.target.className === 'signInRandomKey') {
+        this.setState({
+          userInput2: event.target.value
+        })
+    }   // if its anything else, update userInput one for usage
+    else {
+      this.setState({
+        userInput: event.target.value
+      })
+    }
   }
 
   handleSubmit = (event) => {
     event.preventDefault();
     // set firebase object of chatroom
     const chatrooms = firebase.database().ref('chatrooms');
-    const chatroom1 = chatrooms.child('chatroom1');
-    // pull username and message
+    // pull username and message 
     const enqueuedMessage = this.state.userInput;
 
     // find latest time / date
@@ -95,10 +213,10 @@ class App extends Component {
     }
 
     // on submit - scroll to the bottom of the page after a delay (allow message to be appended)
-    var element = document.querySelector('.lastMessage');
-    setTimeout(function () { 
-      element.scrollIntoView(); 
-    }, 100);
+    // let element = document.querySelector('.lastMessage');
+    // setTimeout(function () { 
+    //   element.scrollIntoView(); 
+    // }, 100);
   }
 
   changeHideState = (event) => {
@@ -171,30 +289,14 @@ class App extends Component {
     return (
       <div className="App">
           
-          <h1>Chattr<span className='cubed'>3</span></h1>
-          
-          <MessageInput userInput={this.state.userInput} trackChanges={this.handleChange} submitStore={this.handleSubmit} />        
-          <div className='messagesBox'>
-            <div>
-              {this.state.messageList.map((messageObject) => {
-                return (
-                  <TotalMessages userID={messageObject.userID} userMessage={messageObject.userMessage} hidden={this.state.hideClassName} sendDate={messageObject.currentTime} cancelMessage={this.removeMessage} firebaseKey={messageObject.userFirebaseKey}/>
-                )
-              }
-              )}
-            {/* empty div so we can scroll to the newest message on message send */}
-            <div className='lastMessage'>..</div>
+          {
+             this.state.publicJoin 
+             ? 
+            <PageOne userInput={this.state.userInput} handleChange={this.handleChange} handleSubmit={this.handleSubmit} messageList={this.state.messageList} hideClassName={this.state.hideClassName} removeMessage={this.removeMessage} changeHideState={this.changeHideState} removeChat={this.removeChat}/>
+             : 
+            <LandingPage publicJoin={this.adjustPublicJoinStatus} handleChange={this.handleChange} signUpOrLogin={this.signUpOrLogin} switchSign={this.switchSign} signOrLogin={this.state.switchSign}/>
 
-            </div>
-          </div>
-          <button className="clear" onClick={this.changeHideState}>Hide / UnHide chat </button>
-          <button className="clear" onClick={this.removeChat}>Remove Chat Permanently for everyone </button>
-
-        {/* </div> */}
-        
-        
-        
-        
+          }        
         {/* {
           // THREE.JS STRETCH
           this.state.clicked 

@@ -8,6 +8,7 @@ class MessageInput extends Component {
                 <form onSubmit={this.props.submitStore} className='messageInputForm'>
                     <label htmlFor='userMessage'></label>
                     <input id='userMessage' type='text' placeholder='Your Message' value={this.props.userInput} className='userMessage' onChange={this.props.trackChanges} />
+                    {/* potentially remove onChange below as its above */}
                     <button onChange={this.props.trackChanges} type='submit'>Go</button>
 
                 </form>

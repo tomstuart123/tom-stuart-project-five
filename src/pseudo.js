@@ -40,15 +40,6 @@
 
 // NEXT /////////////////////////////////
 
- 
-     
-
-    
-
-
-
-
-
         // Make a create chat room feature in firebase and join multiple rooms
             
         // Create room room
