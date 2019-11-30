@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import './App.css';
 import firebase from './firebase/firebase';
-import PageOne from './pages/PageOne'
+import PublicChat from './pages/PublicChat'
 import LandingPage from './pages/LandingPage'
+import RoomPage from './pages/RoomPage'
 
 
 /// CHECK THAT IT SCROLLS TO BOTTOM WHEN YOU SET LIVE SITE
@@ -24,8 +25,11 @@ class App extends Component {
       currentTime: '',
       userFirebaseKey: '',
       publicJoin: false,
+      privateJoin: false,
       switchSign: 'Sign up',
       stop: false,
+      userSignedIn: false,
+      roomName: 'chatroom1', 
     }
 
   
@@ -33,13 +37,13 @@ class App extends Component {
 
   componentDidMount() {
     // if (this.state.publicJoin === true) {
-    //   this.groupChatStart();
+      // this.groupChatStart();
     // } else {
     //   return
     // }
   }
 
-  // PAGE 1 FUNCTIONALITY
+  // LANDING PAGE FUNCTIONALITY
 
   switchSign= () => {
     if (this.state.switchSign === 'Sign up') {
@@ -62,26 +66,21 @@ class App extends Component {
       
       this.signUp(name, pw)
     } else if (this.state.switchSign === 'Login') {
-      this.login()
+      this.login(name, pw)
     }      
   }
 
-  signUp = (name, pw) => {
-    // on sign up - set username and password of input in the state
-    this.setState({
-      userName: name,
-      userPW: pw,
-    })    
+  signUp = (name, pw) => {  
     // pull users area of firebase
     const users = firebase.database().ref('users');
     // pull current time 
     const currentTime = Date(Date.now()).toString();
     // hack needed a setTimeout to deliver the non-default states
-    setTimeout( () => {
+  
       // create object with details of sign up
       const userObject = {
-        userID: this.state.userName,
-        userPW: this.state.userPW,
+        userID: name,
+        userPW: pw,
         signUpTime: currentTime,
       }
       // check if someone already has both these userID / password
@@ -90,7 +89,7 @@ class App extends Component {
         let usersCleaned = users.val();
         for (let user in usersCleaned) {
           
-          if (usersCleaned[user].userID == this.state.userName && usersCleaned[user].userPW.toString() == this.state.userPW) {
+          if (usersCleaned[user].userID == name && usersCleaned[user].userPW.toString() == pw) {
             this.setState({
               stop: true,
             })
@@ -98,32 +97,73 @@ class App extends Component {
         }
       })
       
-      // only run if user has input both text fields
-      if (!this.state.userPW || !this.state.userName) {
-        alert('please fill both sign in fields')
-      } 
-      // only run it if the stop status set above is set to false
-      else if (this.state.stop === true) {
-        alert('sorry someone already has that key with that user name. Try again.')
-      } 
-      // push user to database if the two conditionals above are false
-      else {
-        const pushID = users.push(userObject);
-          userObject.userFirebaseKey = pushID.key;
-          users.child(pushID.key).update(userObject);
+      setTimeout(() => { 
+        console.log(this.state.stop)
+        // only run if user has input both text fields
+        if (!pw || !name) {
+          alert('please fill both sign in fields')
+        } 
+        // only run it if the stop status set above is set to false
+        else if (this.state.stop === true) {
+          alert('sorry someone already has that key with that user name. Try again.')
           this.setState({
-            userID: '',
-            userPW: '',
+            stop: false,
           })
-      }
-    }, 50);
+        } 
+        // error if already signed in 
+        else if (this.state.userSignedIn === true) {
+          alert('Already signed in I am afraid')
+        } 
+        
+        // push user to database if the two conditionals above are false
+        else {
+            const pushID = users.push(userObject);
+            userObject.userFirebaseKey = pushID.key;
+            users.child(pushID.key).update(userObject);
+            this.setState({
+              userName: name,
+              userPW: pw,
+              userSignedIn: true,
+              userInput: '',
+
+            }, () => {
+                this.roomPageStart();
+            })
+        }
+      }, 150);
+   
+    
   } 
 
-  login = () => {
+  login = (name, pw) => {
     console.log('login')
+    // if already signed in, highlight to user
+    if (this.state.userSignedIn === true) {
+      alert('Already signed in. sign out when you can')
+      return
+    }
+
+    // check login details vs. database
+    const users = firebase.database().ref('users');
+    users.on('value', (users) => {
+
+      let usersCleaned = users.val();
+      for (let user in usersCleaned) {
+
+        if (usersCleaned[user].userID === name && usersCleaned[user].userPW.toString() === pw) {
+          this.setState({
+            userName: name,
+            userPW: pw,
+            userSignedIn: true,
+            userInput: '',
+          }, () => {
+            this.roomPageStart();
+          })
+        } 
+      }
+    })
+    // if login match, run get started function below
   }
-
-
 
   adjustPublicJoinStatus = (e) => {
     e.preventDefault();
@@ -139,7 +179,7 @@ class App extends Component {
     this.groupChatStart(userName);
   }
 
-  // PAGE 2 FUNCTIONALITY
+  // 2nd PAGE (PUBLIC CHAT) FUNCTIONALITY
 
   groupChatStart = (name) => {
     // ask for user name and store in variable
@@ -152,27 +192,28 @@ class App extends Component {
     //add to the name given by a user a random generated number to ensure people are different
     const randomUserId = Math.floor(Math.random() * 100);
     userNameResponse = userNameResponse + randomUserId;
-
+    console.log(userNameResponse)
     // pull firebase
     const chatrooms = firebase.database().ref('chatrooms');
     // always listen to firebase database chatrooms. On changes to database, update state
     chatrooms.on('value', (chatroom) => {
       const chatrooms = chatroom.val();
-      const chatroom1 = chatrooms.chatroom1;
+      const currentRoom = this.state.roomName;
+      const chatroomPush = chatrooms[currentRoom];
+      
       let messageArray = [];
-      for (let message in chatroom1) {
-        messageArray.push(chatroom1[message])
+      for (let message in chatroomPush) {
+        messageArray.push(chatroomPush[message])
       }
-      console.log(messageArray)
       // when chatroom changes, push the entire chatroom message to state
       this.setState({
         messageList: messageArray,
         userName: userNameResponse,
       })
       let element = document.querySelector('.lastMessage');
-      setTimeout(function () {
-        element.scrollIntoView();
-      }, 100);
+      // setTimeout(function () {
+      //   element.scrollIntoView();
+      // }, 100);
     })
   }
 
@@ -208,20 +249,20 @@ class App extends Component {
     // find latest time / date
     const currentTime = Date(Date.now()).toString();
 
-
+    
     const messageObject = {
       userID: this.state.userName,
       userMessage: enqueuedMessage,
       currentTime: currentTime,
       userFirebaseKey: '',
     }
-    // push message object to firebase if message isn't empty
+    // push message object to firebase in the 'current' room with chatroom1 as the default if message isn't empty
     if (enqueuedMessage) {
       // store the pushID given to us from firebase
-      const pushID = chatrooms.child('chatroom1').push(messageObject);
+      const pushID = chatrooms.child(this.state.roomName).push(messageObject);
       // update the firebase key with variable pushID
       messageObject.userFirebaseKey = pushID.key;
-      chatrooms.child('chatroom1').child(pushID.key).update(messageObject);
+      chatrooms.child(this.state.roomName).child(pushID.key).update(messageObject);
 
       this.setState({
         userInput: '',
@@ -263,11 +304,10 @@ class App extends Component {
 
   removeChat = (event) => {
     const chatrooms = firebase.database().ref('chatrooms');
-    const chatroom1 = chatrooms.child('chatroom1')
     const userCertain = window.confirm('Are you sure you want to delete the chat for all participants?')
 
     if (userCertain) {
-      chatrooms.child('chatroom1').set({
+      chatrooms.child(this.state.roomName).set({
         0: {
           userID: "Chattr Bot",
           userMessage: "Start chat below"
@@ -286,7 +326,7 @@ class App extends Component {
     if (this.state.userName === event.target.className) 
     // if they are the same, then go into database and find the clicked on message's firebase key. In this firebase key area of your database, delete it
     {
-      chatrooms.child('chatroom1').child(event.target.id).remove();  
+      chatrooms.child(this.state.roomName).child(event.target.id).remove();  
     } 
     // else alert the user that they can't delete other people's messages
     else {
@@ -294,6 +334,122 @@ class App extends Component {
     }
   }
 
+  goBackToStart = (e) => {
+    e.preventDefault();
+    this.setState({
+      clicked: false,
+      messageList: [],
+      userInput: '',
+      userInput2: '',
+      userName: 'Tom',
+      userPW: '',
+      hideClass: true,
+      hideClassName: '',
+      currentTime: '',
+      userFirebaseKey: '',
+      publicJoin: false,
+      switchSign: 'Sign up',
+      stop: false,
+      userSignedIn: false,
+    })
+  }
+
+    // 3rd PAGE (PUBLIC CHAT) FUNCTIONALITY
+
+  roomPageStart = () => {
+    console.log('started private')
+  }
+  
+  createRoom = (e) => {
+    e.preventDefault();
+    let roomName = this.state.userInput;
+
+    const chatrooms = firebase.database().ref('chatrooms');
+    chatrooms.on('value', (chatrooms) => {
+      let chatroomsCleaned = chatrooms.val();
+      
+      for (let chatroom in chatroomsCleaned) {
+
+        if (chatroom.toString() == roomName.toString()) {
+          this.setState({
+            stop: true,
+          })
+        }
+      }
+
+    })
+
+    setTimeout(() => { 
+    // only run if user has input both text fields
+    if (roomName === '') {
+      alert('please fill a room name')
+    } 
+    // update the roomName to userInput if exists
+    // only run it if the stop status set above is set to false
+      else if (this.state.stop === true) {
+      alert('sorry someone already has that room name. Try again.')
+      this.setState({
+        stop: false,
+      })
+    }
+    
+    else {
+      // remove push as not as clean a database
+      let template = '0';
+      const chatRoomObject = {
+        [roomName]: {
+          [template]: {
+            userID: "Chattr Bot",
+            userMessage: "Start chat below",
+          }
+        }
+      }
+      chatrooms.update(chatRoomObject);
+      this.setState({
+        roomName: roomName,
+        userInput: '',
+        privateJoin: true,
+      })
+      let name = this.state.userName
+      this.groupChatStart(name);
+
+
+    }
+    }, 150);
+
+    // run the append chat to page function
+
+
+    
+    // grab time
+    // // create object with details of sign up
+    // const chatRoomObject = {
+    //   [roomName]: {
+    //     userID: 'Chattr Bot',
+    //     userMessage: 'Say hello to your new chat. Send messages below',
+    //     currentTime: currentTime,
+    //     userFirebaseKey: '',
+    //   }
+    // }
+    
+    // // check if someone already has this chatroom name
+    // chatrooms.on('value', (chatrooms) => {
+
+    //   let chatroomsCleaned = chatrooms.val();
+    //   for (let chatroom in chatroomsCleaned) {
+    //     if (chatroomsCleaned[chatroom].userID == name) {
+    //       this.setState({
+    //         stop: true,
+    //       })
+    //     }
+    //   }
+    // })
+  }
+
+  joinRoom = (e) => {
+    e.preventDefault();
+    console.log('joined')
+  }
   
 
 
@@ -310,10 +466,22 @@ class App extends Component {
           {
              this.state.publicJoin 
              ? 
-            <PageOne userInput={this.state.userInput} handleChange={this.handleChange} handleSubmit={this.handleSubmit} messageList={this.state.messageList} hideClassName={this.state.hideClassName} removeMessage={this.removeMessage} changeHideState={this.changeHideState} removeChat={this.removeChat}/>
+            <PublicChat statusChat={this.state.roomName} userInput={this.state.userInput} handleChange={this.handleChange} handleSubmit={this.handleSubmit} messageList={this.state.messageList} hideClassName={this.state.hideClassName} removeMessage={this.removeMessage} changeHideState={this.changeHideState} removeChat={this.removeChat} goBackToStart={this.goBackToStart}/>
+           
              : 
-            <LandingPage publicJoin={this.adjustPublicJoinStatus} handleChange={this.handleChange} signUpOrLogin={this.signUpOrLogin} switchSign={this.switchSign} signOrLogin={this.state.switchSign}/>
-
+             (!this.state.userSignedIn 
+              ? 
+              <LandingPage publicJoin={this.adjustPublicJoinStatus} handleChange={this.handleChange} signUpOrLogin={this.signUpOrLogin} switchSign={this.switchSign} signOrLogin={this.state.switchSign} />
+              :
+              (!this.state.privateJoin
+                ?
+                <RoomPage goBackToStart={this.goBackToStart} handleChange={this.handleChange} createRoom={this.createRoom} />
+                :
+                <PublicChat statusChat={this.state.roomName} userInput={this.state.userInput} handleChange={this.handleChange} handleSubmit={this.handleSubmit} messageList={this.state.messageList} hideClassName={this.state.hideClassName} removeMessage={this.removeMessage} changeHideState={this.changeHideState} removeChat={this.removeChat} goBackToStart={this.goBackToStart} />
+              )
+              
+              
+              )
           }        
         {/* {
           // THREE.JS STRETCH
