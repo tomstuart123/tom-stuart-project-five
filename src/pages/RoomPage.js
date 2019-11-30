@@ -5,7 +5,7 @@ class RoomPage extends Component {
     render() {
         return (
             <div>
-                <h2>Your Signed in</h2>
+                <h2>Hi {this.props.userName}! Your all signed in!</h2>
                 <form className='createRoomInputForm' onSubmit={this.props.createRoom}>
                     <h3>Create a new chat room</h3>
                     <TextInput inputField='Name for the new room' className='createRoom' handleChange={this.props.handleChange} />

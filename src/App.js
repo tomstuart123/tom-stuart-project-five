@@ -4,14 +4,16 @@ import firebase from './firebase/firebase';
 import PublicChat from './pages/PublicChat';
 import LandingPage from './pages/LandingPage';
 import RoomPage from './pages/RoomPage';
+import ThreeContainer from './three.js/ThreeContainer';
 
 
 
 // TOD
-  /// CHECK THAT IT SCROLLS TO BOTTOM WHEN YOU SET LIVE SITE
-  // use the random id generator for public chat but update the private chats to use the user's ID
+  // research three.js implementation
+  // research chatbot & IBM Watson
+  // 
 
-// import ThreeContainer from './three.js/ThreeContainer';
+
 
 class App extends Component {
   constructor() {
@@ -33,7 +35,7 @@ class App extends Component {
       switchSign: 'Sign up',
       stop: false,
       userSignedIn: false,
-      roomName: 'chatroom1', 
+      roomName: 'publicRoom', 
     }
 
   
@@ -184,7 +186,8 @@ class App extends Component {
     this.groupChatStart(userName);
   }
 
-  // 2nd PAGE (PUBLIC CHAT) FUNCTIONALITY
+
+  // MAIN PUBLIC / PRIVATE CHAT FUNCTIONALITY & 
 
   groupChatStart = (name) => {
     // ask for user name and store in variable
@@ -197,6 +200,13 @@ class App extends Component {
     //add to the name given by a user a random generated number to ensure people are different
     const randomUserId = Math.floor(Math.random() * 100);
     userNameResponse = userNameResponse + randomUserId;
+    // console.log(userNameResponse)
+
+    // if roomName = publiRoom (i.e. the public guest chat), add guest to their name, ID and 
+    userNameResponse = this.addGuest(userNameResponse);
+
+   
+
     // pull firebase
     const chatrooms = firebase.database().ref('chatrooms');
     // always listen to firebase database chatrooms. On changes to database, update state
@@ -221,6 +231,18 @@ class App extends Component {
     })
   }
 
+  // adds 'guest' to username if a guest user
+  addGuest = (name) => {
+    if (this.state.roomName === 'publicRoom') {
+      let guest = ':(guest)';
+      name = name + guest;
+    
+    }
+    console.log(name);
+    return name
+  }
+
+  // GENERAL TEXT INPUT FUNCTIONS
   handleChange = (event) => {
     // when input text box changes, update state of the userInput dynamically
 
@@ -274,12 +296,6 @@ class App extends Component {
         userFirebaseKey: '',
       })
     }
-
-    // on submit - scroll to the bottom of the page after a delay (allow message to be appended)
-    // let element = document.querySelector('.lastMessage');
-    // setTimeout(function () { 
-    //   element.scrollIntoView(); 
-    // }, 100);
   }
 
   changeHideState = (event) => {
@@ -324,7 +340,7 @@ class App extends Component {
   }
 
   removeMessage = (event) => {
-    // pull the firebase chatroom1 necessary
+    // pull the firebase chatroom necessary
     const chatrooms = firebase.database().ref('chatrooms');
     // compare current username vs. username held in class on the event clicked on (see total messages span)
     if (this.state.userName === event.target.className) 
@@ -352,6 +368,7 @@ class App extends Component {
       currentTime: '',
       userFirebaseKey: '',
       publicJoin: false,
+      privateJoin: false,
       switchSign: 'Sign up',
       stop: false,
       userSignedIn: false,
@@ -471,8 +488,6 @@ class App extends Component {
 
       // else {
       //   // remove push as not as clean a database
-        
-
       // }
     }, 500);
 
@@ -508,7 +523,7 @@ class App extends Component {
                   ?
                   <PublicChat statusChat={this.state.roomName} userInput={this.state.userInput} handleChange={this.handleChange} handleSubmit={this.handleSubmit} messageList={this.state.messageList} hideClassName={this.state.hideClassName} removeMessage={this.removeMessage} changeHideState={this.changeHideState} removeChat={this.removeChat} goBackToStart={this.goBackToStart} />
                   :
-                <RoomPage goBackToStart={this.goBackToStart} handleChange={this.handleChange} createRoom={this.createRoom} joinRoom={this.joinRoom} />
+                <RoomPage goBackToStart={this.goBackToStart} handleChange={this.handleChange} createRoom={this.createRoom} joinRoom={this.joinRoom} userName={this.state.userName}/>
                 )
               
               

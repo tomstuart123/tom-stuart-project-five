@@ -24,7 +24,7 @@ class PublicChat extends Component {
 
                     </div>
                 </div>
-                <button className="clear" onClick={this.props.changeHideState}>Hide / UnHide chat </button>
+                <button className="clear" onClick={this.props.changeHideState}>Be Private - Hide & UnHide chat just for me</button>
                 <button className="clear" onClick={this.props.removeChat}>Remove Chat Permanently for everyone </button>
                 <button onClick={this.props.goBackToStart}>Go back to sign in page</button>
             </div>
