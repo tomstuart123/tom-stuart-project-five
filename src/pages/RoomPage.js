@@ -11,10 +11,10 @@ class RoomPage extends Component {
                     <TextInput inputField='Name for the new room' className='createRoom' handleChange={this.props.handleChange} />
                     <button type='submit' className='submitRoom'>Create</button>
                 </form>
-                <form className='joinRoomInputForm' onSubmit=''>
+                <form className='joinRoomInputForm' onSubmit={this.props.joinRoom}>
                     <h3>Join an existing chat room</h3>
                     <TextInput inputField='Existing room name' className='joinRoom' handleChange={this.props.handleChange} />
-                    <button type='submit' className='submitRoom'>Join</button>
+                    <button type='submit' className='submitJoin'>Join</button>
                 </form>
                 
                 <button onClick={this.props.goBackToStart}>or Sign out</button>

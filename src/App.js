@@ -1,12 +1,15 @@
 import React, { Component } from "react";
 import './App.css';
 import firebase from './firebase/firebase';
-import PublicChat from './pages/PublicChat'
-import LandingPage from './pages/LandingPage'
-import RoomPage from './pages/RoomPage'
+import PublicChat from './pages/PublicChat';
+import LandingPage from './pages/LandingPage';
+import RoomPage from './pages/RoomPage';
 
 
-/// CHECK THAT IT SCROLLS TO BOTTOM WHEN YOU SET LIVE SITE
+
+// TOD
+  /// CHECK THAT IT SCROLLS TO BOTTOM WHEN YOU SET LIVE SITE
+  // use the random id generator for public chat but update the private chats to use the user's ID
 
 // import ThreeContainer from './three.js/ThreeContainer';
 
@@ -26,6 +29,7 @@ class App extends Component {
       userFirebaseKey: '',
       publicJoin: false,
       privateJoin: false,
+      privateCreate: false,
       switchSign: 'Sign up',
       stop: false,
       userSignedIn: false,
@@ -98,7 +102,6 @@ class App extends Component {
       })
       
       setTimeout(() => { 
-        console.log(this.state.stop)
         // only run if user has input both text fields
         if (!pw || !name) {
           alert('please fill both sign in fields')
@@ -126,17 +129,14 @@ class App extends Component {
               userSignedIn: true,
               userInput: '',
 
-            }, () => {
-                this.roomPageStart();
             })
         }
-      }, 150);
+      }, 300);
    
     
   } 
 
   login = (name, pw) => {
-    console.log('login')
     // if already signed in, highlight to user
     if (this.state.userSignedIn === true) {
       alert('Already signed in. sign out when you can')
@@ -148,6 +148,7 @@ class App extends Component {
     users.on('value', (users) => {
 
       let usersCleaned = users.val();
+      let testArray = []
       for (let user in usersCleaned) {
 
         if (usersCleaned[user].userID === name && usersCleaned[user].userPW.toString() === pw) {
@@ -156,12 +157,16 @@ class App extends Component {
             userPW: pw,
             userSignedIn: true,
             userInput: '',
-          }, () => {
-            this.roomPageStart();
           })
+          testArray.push('match')
         } 
+      } 
+      if (testArray.length === 0) {
+        alert('sorry, no username and ID matches those. Try again')
       }
+
     })
+    
     // if login match, run get started function below
   }
 
@@ -192,7 +197,6 @@ class App extends Component {
     //add to the name given by a user a random generated number to ensure people are different
     const randomUserId = Math.floor(Math.random() * 100);
     userNameResponse = userNameResponse + randomUserId;
-    console.log(userNameResponse)
     // pull firebase
     const chatrooms = firebase.database().ref('chatrooms');
     // always listen to firebase database chatrooms. On changes to database, update state
@@ -211,9 +215,9 @@ class App extends Component {
         userName: userNameResponse,
       })
       let element = document.querySelector('.lastMessage');
-      // setTimeout(function () {
-      //   element.scrollIntoView();
-      // }, 100);
+      setTimeout(function () {
+        element.scrollIntoView();
+      }, 100);
     })
   }
 
@@ -355,10 +359,6 @@ class App extends Component {
   }
 
     // 3rd PAGE (PUBLIC CHAT) FUNCTIONALITY
-
-  roomPageStart = () => {
-    console.log('started private')
-  }
   
   createRoom = (e) => {
     e.preventDefault();
@@ -408,47 +408,74 @@ class App extends Component {
       this.setState({
         roomName: roomName,
         userInput: '',
-        privateJoin: true,
+        privateCreate: true,
       })
-      let name = this.state.userName
+      // run append to page function that takes name as the only parameter
+      let name = this.state.userName;
       this.groupChatStart(name);
-
-
     }
-    }, 150);
-
-    // run the append chat to page function
-
-
-    
-    // grab time
-    // // create object with details of sign up
-    // const chatRoomObject = {
-    //   [roomName]: {
-    //     userID: 'Chattr Bot',
-    //     userMessage: 'Say hello to your new chat. Send messages below',
-    //     currentTime: currentTime,
-    //     userFirebaseKey: '',
-    //   }
-    // }
-    
-    // // check if someone already has this chatroom name
-    // chatrooms.on('value', (chatrooms) => {
-
-    //   let chatroomsCleaned = chatrooms.val();
-    //   for (let chatroom in chatroomsCleaned) {
-    //     if (chatroomsCleaned[chatroom].userID == name) {
-    //       this.setState({
-    //         stop: true,
-    //       })
-    //     }
-    //   }
-    // })
+    }, 300);
   }
 
   joinRoom = (e) => {
     e.preventDefault();
-    console.log('joined')
+
+    let roomName = this.state.userInput;
+    const chatrooms = firebase.database().ref('chatrooms');
+    chatrooms.on('value', (chatrooms) => {
+      let chatroomsCleaned = chatrooms.val();
+      let matchOnce = [];
+      for (let chatroom in chatroomsCleaned) {
+        if (chatroom.toString() == roomName.toString()) {
+          matchOnce.push('match')
+        } else {
+          console.log(matchOnce)
+        }
+      }
+      console.log(matchOnce)
+      if (matchOnce.length > 0) {
+        this.setState({
+          stop: false,
+        })
+      } else {
+        this.setState({
+          stop: true,
+        })
+      }
+      console.log(matchOnce)
+    })
+    setTimeout(() => {
+      console.log(this.state.stop)
+      // only run if user has input both text fields
+      if (roomName === '') {
+        alert('please fill a room name')
+      }
+      // update the roomName to userInput if exists
+      // only run it if the stop status set above is set to false
+      else if (this.state.stop === false) {
+        // alert('sorry there are no room names with that title. Try again.')
+        // this.setState({
+        //   stop: false,
+        // })
+        this.setState({
+          roomName: roomName,
+          userInput: '',
+          privateJoin: true,
+        })
+        let name = this.state.userName
+        this.groupChatStart(name);
+      } else {
+        alert('sorry there are no room names with that title. Try again.')
+        
+      }
+
+      // else {
+      //   // remove push as not as clean a database
+        
+
+      // }
+    }, 500);
+
   }
   
 
@@ -473,15 +500,20 @@ class App extends Component {
               ? 
               <LandingPage publicJoin={this.adjustPublicJoinStatus} handleChange={this.handleChange} signUpOrLogin={this.signUpOrLogin} switchSign={this.switchSign} signOrLogin={this.state.switchSign} />
               :
-              (!this.state.privateJoin
+              (this.state.privateCreate
                 ?
-                <RoomPage goBackToStart={this.goBackToStart} handleChange={this.handleChange} createRoom={this.createRoom} />
-                :
                 <PublicChat statusChat={this.state.roomName} userInput={this.state.userInput} handleChange={this.handleChange} handleSubmit={this.handleSubmit} messageList={this.state.messageList} hideClassName={this.state.hideClassName} removeMessage={this.removeMessage} changeHideState={this.changeHideState} removeChat={this.removeChat} goBackToStart={this.goBackToStart} />
-              )
+                :
+                (this.state.privateJoin
+                  ?
+                  <PublicChat statusChat={this.state.roomName} userInput={this.state.userInput} handleChange={this.handleChange} handleSubmit={this.handleSubmit} messageList={this.state.messageList} hideClassName={this.state.hideClassName} removeMessage={this.removeMessage} changeHideState={this.changeHideState} removeChat={this.removeChat} goBackToStart={this.goBackToStart} />
+                  :
+                <RoomPage goBackToStart={this.goBackToStart} handleChange={this.handleChange} createRoom={this.createRoom} joinRoom={this.joinRoom} />
+                )
               
               
               )
+             )
           }        
         {/* {
           // THREE.JS STRETCH
