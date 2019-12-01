@@ -41,7 +41,7 @@ class App extends Component {
   
   }
 
-  componentDidMount() {
+  componentDidMount = () => {
     // if (this.state.publicJoin === true) {
       // this.groupChatStart();
     // } else {
@@ -184,6 +184,10 @@ class App extends Component {
     })
     // public app start
     this.groupChatStart(userName);
+  }
+
+  scrollDown = (e) => {
+    window.scrollBy(0, 600);
   }
 
 
@@ -504,7 +508,6 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-          
           {
              this.state.publicJoin 
              ? 
@@ -513,7 +516,7 @@ class App extends Component {
              : 
              (!this.state.userSignedIn 
               ? 
-              <LandingPage publicJoin={this.adjustPublicJoinStatus} handleChange={this.handleChange} signUpOrLogin={this.signUpOrLogin} switchSign={this.switchSign} signOrLogin={this.state.switchSign} />
+              <LandingPage publicJoin={this.adjustPublicJoinStatus} handleChange={this.handleChange} signUpOrLogin={this.signUpOrLogin} switchSign={this.switchSign} signOrLogin={this.state.switchSign} scrollDown={this.scrollDown}/>
               :
               (this.state.privateCreate
                 ?
@@ -529,7 +532,7 @@ class App extends Component {
               
               )
              )
-          }        
+          }      
         {/* {
           // THREE.JS STRETCH
           this.state.clicked 

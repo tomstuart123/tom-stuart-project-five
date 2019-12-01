@@ -1,23 +1,163 @@
+/* General set up */
+
+html {
+  font-size: 20px;
+  font-family: monospace;
+}
+
 .App {
-  width: 85%;
   padding: 30px 0;
   margin: 0 auto;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+
+.wrapper {
+    max-width: 1080px; 
+    width: 85%;
+    margin: 0px auto;
+    height: 100%;
+}
+
+h1 {
+  font-size: 1.8rem;
+
+}
+
+p, button, input {
+  font-size: 1rem;
+  
+}
+
+button {
+  width: 200px;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* Nav (all pages) */
+
+
+nav {
+    font-family: Lato, sans-serif;
+    position: relative;
+    height: 100px;
+    padding-top: 30px; 
+}
+
+nav .wrapper {
+  height: 100%;
+}
+
+
+nav div {
+    display: flex;
+    height: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+/* nav ul:nth-of-type(1) {
+    padding-top: 20px;
+    padding-left: 0;
+} */
+
+nav li {
+    font-size: 1rem;
+    line-height: 15px;
+    list-style-type: none;
+    text-decoration: none;
+    color: white;
+    width: auto;
+    transition: font-size 0.5s;
+    cursor: pointer;
+}
+
+nav li:hover {
+    font-size: 1.1rem;
+}
+
+nav a {
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+}
+
+nav .logo a {
+    font-size: 1.6rem;
+    transition: font-size 0.5s;
+}
+
+nav a:hover{
+    font-size: 1.7rem;
+}
+
+/* Landing Page */
+
+
+.landingPageTop {
+  height: 625px;
+  width: 100%;
+  background: url(./assets/gilles-lambert-pb_lF8VWaPU-unsplash.jpg);
+  background-size: cover;
+  background-position: center;
+  width: 100%;
+
+}
+.landingPageBottom {
+  height: 450px;
+  background: blue;
+  margin-bottom: 150px;
+  width: 100%;
+  
+}
+
+.landingPageTop form, .landingPageBottom form {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  justify-content: space-evenly;
+  height: 200px;
+}
+
+.landingPageBottom form {
+  height: 300px;
+}
+
+
+
+.landingPageTop h1, h2, h3, p, button, input, form, .landingPageBottom h1, h3,h3, p, button, input, form {
+  text-align: center;
+}
+
+.scrollDownHolder {
+  display: flex;
+  flex-direction: column;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  height: 150px;
+}
+
+.landingPageTop h1, .landingPageBottom h1 {
+  font-size: 1.8rem;
+  margin: 50px 0px;
+  margin-bottom: 20px;
   color: white;
 }
 
-.App-link {
-  color: #09d3ac;
+.landingPageTop h2, .landingPageBottom h2 {
+  font-size: 1.5rem;
 }
+
+.landingPageTop button, .landingPageTop input, .landingPageBottom button, .landingPageBottom input {
+  margin: 0 auto;
+  width: 500px;
+}
+
+
+
+
+
+
 
 /* Structure */
 .firstPage {
@@ -94,3 +234,84 @@
 button, input {
   margin: 7.5px 0px
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* RESET & SET UP */
+
+
+.clearfix:after {
+    visibility: hidden; 
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+} 
+
+* {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.visuallyHidden:not(:focus):not(:active) { 
+	  position: absolute !important;
+	  height: 1px; 
+	  width: 1px;
+	  overflow: hidden;
+	  clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+	  clip: rect(1px, 1px, 1px, 1px);
+	  white-space: nowrap; /* added line */
+}
+
+
+fieldset {
+    border: 0px;
+    margin: 0px;
+    padding: 0px;
+
+}
+
+h1, h2 {
+    margin: 0px;
+}
+
+ul {
+    display: block;
+    list-style-type: disc;
+    margin-block-start: 0;
+    margin-block-end: 0;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding-inline-start: 0px;
+}
+
+p {
+    display: block;
+    margin-block-start: 0em;
+    margin-block-end: 0em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+}
+
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* NORMALIZE */
+
+article,aside,details,figcaption,figure,footer,header,hgroup,nav,section,summary{display:block;}audio,canvas,video{display:inline-block;}audio:not([controls]){display:none;height:0;}[hidden]{display:none;}html{font-family:sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;}a:focus{outline:thin dotted;}a:active,a:hover{outline:0;}h1{font-size:2em;}abbr[title]{border-bottom:1px dotted;}b,strong{font-weight:700;}dfn{font-style:italic;}mark{background:#ff0;color:#000;}code,kbd,pre,samp{font-family:monospace, serif;font-size:1em;}pre{white-space:pre-wrap;word-wrap:break-word;}q{quotes:\201C \201D \2018 \2019;}small{font-size:80%;}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline;}sup{top:-.5em;}sub{bottom:-.25em;}img{border:0;}svg:not(:root){overflow:hidden;}fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em;}button,input,select,textarea{font-family:inherit;font-size:100%;margin:0;}button,input{line-height:normal;}button,html input[type=button],/* 1 */input[type=reset],input[type=submit]{-webkit-appearance:button;cursor:pointer;}button[disabled],input[disabled]{cursor:default;}input[type=checkbox],input[type=radio]{box-sizing:border-box;padding:0;}input[type=search]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box;}input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-search-decoration{-webkit-appearance:none;}textarea{overflow:auto;vertical-align:top;}table{border-collapse:collapse;border-spacing:0;}body,figure{margin:0;}legend,button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0;}
+    
+
