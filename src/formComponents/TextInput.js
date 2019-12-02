@@ -5,7 +5,7 @@ class TextInput extends Component {
         return (
             <div className='signInForm'>
                     <label htmlFor={this.props.className}></label>
-                    <input id={this.props.className} type='text' placeholder={this.props.inputField} className={this.props.className} onChange={this.props.handleChange} />
+                    <input autoComplete="off" id={this.props.className} type='text' placeholder={this.props.inputField} className={this.props.className} onChange={this.props.handleChange} />
             </div>
             )
     }

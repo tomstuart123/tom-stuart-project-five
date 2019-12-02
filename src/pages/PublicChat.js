@@ -7,8 +7,16 @@ class PublicChat extends Component {
     render() {
         return (
             <div className='page2'>
-                <h1>Chattr<span className='cubed'>3</span></h1>
-                <h2>Chatroom: {this.props.statusChat}</h2>
+                <nav>
+                    <section className='wrapper '>
+                        <div>
+                            <li className='logo logo-landing'> <a href="index.html">Chattr<span className='accent'>-3</span></a> </li>
+                            <li onClick={this.props.goBackToStart}>{this.props.userName} sign out </li>
+                        </div>
+                    </section>
+                </nav>
+                <section className='wrapper'>
+                <h2>Channel: {this.props.statusChat}</h2>
 
                 <MessageInput userInput={this.props.userInput} trackChanges={this.props.handleChange} submitStore={this.props.handleSubmit} />
                 <div className='messagesBox'>
@@ -20,13 +28,13 @@ class PublicChat extends Component {
                         }
                         )}
                         {/* empty div so we can scroll to the newest message on message send */}
-                        <div className='lastMessage'>..</div>
+                        <div className='lastMessage'></div>
 
                     </div>
                 </div>
                 <button className="clear" onClick={this.props.changeHideState}>Be Private - Hide & UnHide chat just for me</button>
-                <button className="clear" onClick={this.props.removeChat}>Remove Chat Permanently for everyone </button>
-                <button onClick={this.props.goBackToStart}>Go back to sign in page</button>
+                {/* <button className="clear" onClick={this.props.removeChat}>Remove Chat Permanently for everyone </button> */}
+                </section>
             </div>
         )
     }

@@ -4,14 +4,14 @@ import firebase from './firebase/firebase';
 import PublicChat from './pages/PublicChat';
 import LandingPage from './pages/LandingPage';
 import RoomPage from './pages/RoomPage';
-import ThreeContainer from './three.js/ThreeContainer';
-
 
 
 // TOD
-  // research three.js implementation
-  // research chatbot & IBM Watson
-  // 
+  // Re-look at public chat styling
+  // swap VR over and make sure the sites link
+  // make sure sign in and account persists on page refresh
+  // fix scroll to message bug
+  // fix bug - currently you can sign in as existing user
 
 
 
@@ -23,7 +23,7 @@ class App extends Component {
       messageList: [],
       userInput: '',
       userInput2: '',
-      userName: 'Tom',
+      userName: 'guest',
       userPW: '',
       hideClass: true,
       hideClassName: '',
@@ -187,7 +187,8 @@ class App extends Component {
   }
 
   scrollDown = (e) => {
-    window.scrollBy(0, 600);
+    e.preventDefault();
+    window.scrollBy(0, 1000);
   }
 
 
@@ -207,8 +208,6 @@ class App extends Component {
     // console.log(userNameResponse)
 
     // if roomName = publiRoom (i.e. the public guest chat), add guest to their name, ID and 
-    userNameResponse = this.addGuest(userNameResponse);
-
    
 
     // pull firebase
@@ -233,17 +232,6 @@ class App extends Component {
         element.scrollIntoView();
       }, 100);
     })
-  }
-
-  // adds 'guest' to username if a guest user
-  addGuest = (name) => {
-    if (this.state.roomName === 'publicRoom') {
-      let guest = ':(guest)';
-      name = name + guest;
-    
-    }
-    console.log(name);
-    return name
   }
 
   // GENERAL TEXT INPUT FUNCTIONS
@@ -373,9 +361,11 @@ class App extends Component {
       userFirebaseKey: '',
       publicJoin: false,
       privateJoin: false,
+      privateCreate: false,
       switchSign: 'Sign up',
       stop: false,
       userSignedIn: false,
+      roomName: 'publicRoom', 
     })
   }
 
@@ -497,14 +487,6 @@ class App extends Component {
 
   }
   
-
-
-  // THREE.JS STRETCH
-  // runThree = () => {
-  //   this.setState({
-  //     clicked: !this.state.clicked,
-  //   });
-  // }
   render() {
     return (
       <div className="App">
@@ -520,11 +502,11 @@ class App extends Component {
               :
               (this.state.privateCreate
                 ?
-                <PublicChat statusChat={this.state.roomName} userInput={this.state.userInput} handleChange={this.handleChange} handleSubmit={this.handleSubmit} messageList={this.state.messageList} hideClassName={this.state.hideClassName} removeMessage={this.removeMessage} changeHideState={this.changeHideState} removeChat={this.removeChat} goBackToStart={this.goBackToStart} />
+                <PublicChat userName={this.state.userName} statusChat={this.state.roomName} userInput={this.state.userInput} handleChange={this.handleChange} handleSubmit={this.handleSubmit} messageList={this.state.messageList} hideClassName={this.state.hideClassName} removeMessage={this.removeMessage} changeHideState={this.changeHideState} removeChat={this.removeChat} goBackToStart={this.goBackToStart} />
                 :
                 (this.state.privateJoin
                   ?
-                  <PublicChat statusChat={this.state.roomName} userInput={this.state.userInput} handleChange={this.handleChange} handleSubmit={this.handleSubmit} messageList={this.state.messageList} hideClassName={this.state.hideClassName} removeMessage={this.removeMessage} changeHideState={this.changeHideState} removeChat={this.removeChat} goBackToStart={this.goBackToStart} />
+                  <PublicChat userName={this.state.userName} statusChat={this.state.roomName} userInput={this.state.userInput} handleChange={this.handleChange} handleSubmit={this.handleSubmit} messageList={this.state.messageList} hideClassName={this.state.hideClassName} removeMessage={this.removeMessage} changeHideState={this.changeHideState} removeChat={this.removeChat} goBackToStart={this.goBackToStart} />
                   :
                 <RoomPage goBackToStart={this.goBackToStart} handleChange={this.handleChange} createRoom={this.createRoom} joinRoom={this.joinRoom} userName={this.state.userName}/>
                 )
