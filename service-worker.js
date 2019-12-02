@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/tom-stuart-project-five/precache-manifest.d4582b9c80b998d1aae5a309b4ca1e3f.js"
+  "/tom-stuart-project-five/precache-manifest.e6c69dcc4b7a092485c780815dd71d44.js"
 );
 
 self.addEventListener('message', (event) => {
