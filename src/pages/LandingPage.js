@@ -29,7 +29,7 @@ class LandingPage extends Component {
                 </div>
                 <div className='landingPageBottom'> 
                     <section className='wrapper '>
-                        <h2> {this.props.signOrLogin} to create your own channels</h2> 
+                        <h2> {this.props.signOrLogin} to create and join your own private channels</h2> 
                         <form className='signInForm' onSubmit={this.props.signUpOrLogin}>
                             <p>Add a UserName</p>
                             <TextInput inputField='Name' className='signInName' handleChange={this.props.handleChange}/>

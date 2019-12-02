@@ -7,11 +7,10 @@ import RoomPage from './pages/RoomPage';
 
 
 // TOD
-  // Re-look at public chat styling
-  // swap VR over and make sure the sites link
   // make sure sign in and account persists on page refresh
+  // Re-look at public chat styling
   // fix scroll to message bug
-  // fix bug - currently you can sign in as existing user
+  // fix bug - currently you can sign in occasionally as existing users
 
 
 

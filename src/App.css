@@ -48,7 +48,12 @@ html {
 .accent {
   font-size: 0.8rem;
   color: #e6ca85;
+  transition: font-size 0.5s;
 
+}
+
+.accent:hover {
+  font-size: 1rem;
 }
 
 .imageContainer {
@@ -149,7 +154,7 @@ nav a:hover{
 }
 
 .landingPageTop h2, .landingPageBottom h2 {
-  font-size: 2.3rem;
+  font-size: 2rem;
   margin-bottom: 20px;
   padding: 75px 0px;
 }
@@ -357,7 +362,7 @@ nav a:hover{
 
 @media (max-width: 900px) {
   .landingPageBottom h2 {
-    font-size: 1.8rem;
+    font-size: 1.75rem;
   }
   
   .landingPageTop button, .landingPageTop input, .landingPageBottom button, .landingPageBottom input {
