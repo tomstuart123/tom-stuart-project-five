@@ -7,10 +7,9 @@ class MessageInput extends Component {
             <div className="messageInput">
                 <form onSubmit={this.props.submitStore} className='messageInputForm'>
                     <label htmlFor='userMessage'></label>
-                    <input autocomplete="off"
+                    <input autoComplete="off"
                     id='userMessage' type='text' placeholder='Your Message' value={this.props.userInput} className='userMessage' onChange={this.props.trackChanges} />
-                    {/* potentially remove onChange below as its above */}
-                    <button onChange={this.props.trackChanges} type='submit'>Go</button>
+                    <button onChange={this.props.trackChanges} type='submit'>Send</button>
 
                 </form>
             </div>

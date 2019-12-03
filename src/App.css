@@ -2,7 +2,10 @@
 
 html {
   font-size: 20px;
-  font-family: monospace;
+}
+
+body {
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 .App {
@@ -19,6 +22,7 @@ html {
 h1 {
   font-size: 1.8rem;
 
+
 }
 
 p, button, input {
@@ -31,12 +35,12 @@ button {
   padding: 5px;
   background: #e6ca85;
   font-weight: 500;
+  border: none;
 }
 
 button:hover {
-  width: 200px;
   padding: 5px;
-  background: #ebeced;
+  background: #f0efef;
   color: rgb(32, 32, 30);
   border: #e6ca85 solid 1px;
 }
@@ -68,7 +72,6 @@ img {
 
 
 nav {
-    font-family: Lato, sans-serif;
     position: relative;
     height: 100px;
     padding-top: 40px; 
@@ -92,10 +95,11 @@ nav li {
     line-height: 15px;
     list-style-type: none;
     text-decoration: none;
-    color:#ebeced;
+    color:#f0efef;
     width: auto;
     transition: font-size 0.5s;
     cursor: pointer;
+        
 }
 
 nav li:hover {
@@ -104,7 +108,7 @@ nav li:hover {
 
 nav a {
     font-weight: bold;
-    color: #ebeced;
+    color: #f0efef;
     text-decoration: none;
 }
 
@@ -117,11 +121,11 @@ nav a:hover{
     font-size: 1.7rem;
 }
 
-.page2 nav a, .roomPage nav a {
+.page2 nav a{
   color: rgb(32, 32, 30)
 }
 
-.page2 nav li, .roomPage nav li {
+.page2 nav li {
   color: rgb(32, 32, 30);
   font-weight: 550;
   font-size: 1rem;
@@ -140,23 +144,28 @@ nav a:hover{
 }
 .landingPageBottom {
   height: 660px;
-  background: #ebeced;
+  background: #f0efef;
   width: 100%;
   
 }
+
+
 
 
 .landingPageTop h1, .landingPageBottom h1 {
   font-size: 2.3rem;
   margin: 75px 0px;
   margin-bottom: 20px;
-  color: #ebeced;
+  color: #f0efef;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
-.landingPageTop h2, .landingPageBottom h2 {
+.landingPageTop h2, .landingPageBottom h2, .roomPageBottom h2 {
   font-size: 2rem;
   margin-bottom: 20px;
   padding: 75px 0px;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+
 }
 
 .landingPageTop form, .landingPageBottom form {
@@ -170,9 +179,6 @@ nav a:hover{
   justify-content: space-between;
   height: 300px;
 }
-
-
-
 
 .landingPageTop h1, .landingPageTop h2, .landingPageTop h3, .landingPageTop p, .landingPageTop button, .landingPageTop input, .landingPageTop form, .landingPageBottom h1, .landingPageBottom h3,.landingPageBottom p, .landingPageBottom button, .landingPageBottom input, .landingPageBottom form {
   text-align: left;
@@ -231,8 +237,8 @@ nav a:hover{
 
 /* CHAT PAGE & ROOM PAGE*/
 
- .page2, .roomPage {
-   background: #ebeced;
+ .page2, .roomPageBottom {
+   background:#f0efef;
  }
 
 .page2 h1 {
@@ -253,6 +259,18 @@ nav a:hover{
 }
 
 /* ROOM PAGE */
+
+.roomPageTop {
+  background: linear-gradient( rgba(0,0,0,0.5), rgba(0, 0, 0, 0.5) ), url(./assets/manu-schwendener-g0OT8TogXng-unsplash.jpg);
+  background-size: cover;
+  background-position: center;
+  width: 100%;
+}
+
+.roomPage h3, .roomPage p, .roomPage h1{
+  color: #f0efef;
+}
+
 .roomPage .wrapper {
   height: 560px;
 }
@@ -265,6 +283,11 @@ nav a:hover{
   margin-top: 0px;
   font-size: 1.8rem;
   text-align: center;
+}
+
+.roomPage .introText {
+  text-align: center;
+  font-weight: 500;
 }
 
 .roomPage h3 {
@@ -289,22 +312,78 @@ nav a:hover{
   margin: 5px 0;
 }
 
-/* CHAT PAGE */
-
-.userMessage, .messageInputForm button, .clear, .page2 button {
-  width: 100%;
-  margin-top: 15px;
-  padding: 7px; 
+.existingRoomButton {
   font-size: 0.8rem;
+  background: none;
+  color: #f0efef;
+  border: none;
+  width: 100%;
+  margin: 0 auto;
+  font-size: 0.9rem;
 }
 
-.page2 .wrapper button:hover {
-  width: 100%;
+.existingRoomButton:hover {
+  color: #e6ca85;
+  background: none;
+  border:none;
+
+}
+
+.roomPageBottom {
+  height: 660px;
+}
+
+.roomPageBottom .wrapper {
+  justify-content: flex-start;
+}
+
+.pastRooms {
+  margin: 0px 3px;
+
+}
+
+
+
+
+/* CHAT PAGE */
+.page2 {
+  display: flex;
+  flex-direction: row;
+}
+
+.page2Main {
+  width: 80%;
+}
+
+.page2Side {
+  width: 20%;
+  padding: 2.5%;
+  background: #3B3B3C;
+  color: white;
+}
+
+.page2SideTop {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 20%;
+}
+
+.page2SideBottom {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 80%;
+}
+
+.page2SideBottom a {
+  margin: 15px 0;
+  font-size: 1.8rem;
 }
 
 .messageInputForm {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: space-between;
   font-size: 0.8rem;
 }
@@ -312,15 +391,34 @@ nav a:hover{
 .messagesBox {
     min-height: 280px;
     max-height: 280px;
+    margin-top: 30px;
     width: 100%;
     border: 1px rgb(32, 32, 30) solid;
     text-align: left;
     overflow-y: auto;
     padding: 10px;
+    background: white;
 }
 .totalMessages p {
   font-size: 0.8rem;
   padding: 3px 0px;
+}
+
+
+
+.userMessage, .messageInputForm button, .clear, .page2 button {
+  width: 85%;
+  margin-top: 15px;
+  padding: 10px; 
+  font-size: 0.8rem;
+}
+
+.page2 button {
+  width: 100%;
+}
+
+.messageInputForm button {
+  width: 15%;
 }
 
 .messageText {
@@ -342,10 +440,15 @@ nav a:hover{
   display: none;
 }
 
+.dateText {
+  margin-bottom: 7.5px;
+}
+
 .date {
   font-style: italic;
   font-size: 0.5rem;
   color: grey;
+
 }
 
 .deleteYou {
@@ -353,6 +456,14 @@ nav a:hover{
   font-size: 0.7rem;
   color: grey;
   cursor: pointer;
+}
+
+.tipText {
+  font-size: 0.6rem;
+  width: 80%;
+  text-align: center;
+  margin: 0 auto;
+  font-weight: 500;
 }
 
 
@@ -411,7 +522,7 @@ nav a:hover{
 }
 
 .landingPageTop button, .landingPageTop input {
-    width: 90%;
+    width: 75%;
     margin-top: 50px;
     margin: 0px auto;
     text-align: center;
@@ -419,7 +530,7 @@ nav a:hover{
 
   .landingPageBottom button, .landingPageBottom input {
     margin-top: 0px;
-    width: 90%;
+    width: 75%;
     margin: 0px auto;
     text-align: center;
   }
@@ -442,8 +553,13 @@ nav a:hover{
   }
 
   .roomPageForms form {
-    width: 100%;
+    width: 70%;
+    margin: 0 auto;
 
+  }
+
+  .introText {
+    display: none;
   }
 
 }

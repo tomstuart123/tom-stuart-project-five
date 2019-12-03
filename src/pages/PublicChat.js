@@ -7,6 +7,21 @@ class PublicChat extends Component {
     render() {
         return (
             <div className='page2'>
+                <div className='page2Side'>
+                    <div className='page2SideTop'>
+                    <h3>Your Existing Chatrooms</h3>
+                    </div>
+                    <div className='page2SideBottom'>
+                    {this.props.pastRoomNames.map((room) => {
+
+                        return (
+                            <a className='pastRooms'>{`- ${room}`}</a>
+                        )
+                    })
+                    }
+                    </div>
+                </div>
+                <div className='page2Main'>
                 <nav>
                     <section className='wrapper '>
                         <div>
@@ -17,8 +32,6 @@ class PublicChat extends Component {
                 </nav>
                 <section className='wrapper'>
                 <h2>Channel: {this.props.statusChat}</h2>
-
-                <MessageInput userInput={this.props.userInput} trackChanges={this.props.handleChange} submitStore={this.props.handleSubmit} />
                 <div className='messagesBox'>
                     <div>
                         {this.props.messageList.map((messageObject) => {
@@ -32,9 +45,12 @@ class PublicChat extends Component {
 
                     </div>
                 </div>
-                <button className="clear" onClick={this.props.changeHideState}>Be Private - Hide & UnHide chat just for me</button>
-                {/* <button className="clear" onClick={this.props.removeChat}>Remove Chat Permanently for everyone </button> */}
+                <MessageInput userInput={this.props.userInput} trackChanges={this.props.handleChange} submitStore={this.props.handleSubmit} />
+                {/* <button className="clear" onClick={this.props.changeHideState}>Be Private - Hide & UnHide chat just for me</button> */}
+                <button className="clear" onClick={this.props.removeChat}>Remove Chat Permanently for everyone </button>
+                <p class='tipText'>Tip - Each chat session you get a unique ID next to your Username </p>
                 </section>
+                </div>
             </div>
         )
     }

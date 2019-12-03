@@ -6,11 +6,35 @@ import LandingPage from './pages/LandingPage';
 import RoomPage from './pages/RoomPage';
 
 
+
 // TOD
-  // make sure sign in and account persists on page refresh
-  // Re-look at public chat styling
-  // fix scroll to message bug
-  // fix bug - currently you can sign in occasionally as existing users
+  // WEB TO DO 
+    // add signed in colour to the page
+    // add sending of pics / gifs
+
+  // VR TO DO
+    // Add VR objects to VR and change the background
+    // typing on mobile in vr
+
+
+// PRESENTATION
+  // Lots to show you so will take you through the parts of my app as I built them
+  // Public Chat (message with Juan)
+    // highlight that we are guest users
+    // differentiated by numbers
+    // delete your messages but not others
+  
+  // Sign in functionality (message with russell)
+    // Create a room - 
+    // Join a room - 
+    // Notice we stay signed in throughout the process
+    // and we can sign out at anytime
+  
+  // But the vision of this project isn't just a chat app. The reason I built the 3 at the end was that I eventually would like to work in Virtual reality and James' work inspired me 
+    // Juan as messager of the public chat
+    // This is react 360 - things are difficult here. 
+    // <Text> elements are used and <View>
+    // 
 
 
 
@@ -35,16 +59,24 @@ class App extends Component {
       stop: false,
       userSignedIn: false,
       roomName: 'publicRoom', 
+      priorRoomMessage: `You currently don't have any rooms set up`,
+      pastRoomNames: [],
     }
-
-  
   }
 
   componentDidMount = () => {
-    // if (this.state.publicJoin === true) {
-      // this.groupChatStart();
-    // } else {
-    //   return
+    // store sign in via local storage
+    if (localStorage.userSignedIn === 'true') {
+      this.setState({
+        userSignedIn: true,
+        userName: localStorage.userName,
+        userPW: localStorage.userPW,
+      })    
+    }
+
+    // if userID in firebase === 
+    this.findRoomsUserIsIn();
+
     // }
   }
 
@@ -80,14 +112,14 @@ class App extends Component {
     const users = firebase.database().ref('users');
     // pull current time 
     const currentTime = Date(Date.now()).toString();
-    // hack needed a setTimeout to deliver the non-default states
-  
+    
+
       // create object with details of sign up
-      const userObject = {
+    const userObject = {
         userID: name,
         userPW: pw,
         signUpTime: currentTime,
-      }
+    }
       // check if someone already has both these userID / password
       users.on('value', (users) => {
         
@@ -129,10 +161,15 @@ class App extends Component {
               userPW: pw,
               userSignedIn: true,
               userInput: '',
-
             })
+
+            localStorage.setItem('userName', name);
+            localStorage.setItem('userPW', pw);
+            localStorage.setItem('userSignedIn', true)
         }
-      }, 300);
+      }, 500);
+
+
    
     
   } 
@@ -160,6 +197,9 @@ class App extends Component {
             userInput: '',
           })
           testArray.push('match')
+          localStorage.setItem('userName', name);
+          localStorage.setItem('userPW', pw);
+          localStorage.setItem('userSignedIn', true)
         } 
       } 
       if (testArray.length === 0) {
@@ -188,6 +228,7 @@ class App extends Component {
   scrollDown = (e) => {
     e.preventDefault();
     window.scrollBy(0, 1000);
+    console.log('hello')
   }
 
 
@@ -200,11 +241,14 @@ class App extends Component {
     // if (userNameResponse === '') {
     //   userNameResponse = prompt('try again, what is your name?')
     // }
-
-    //add to the name given by a user a random generated number to ensure people are different
     const randomUserId = Math.floor(Math.random() * 100);
-    userNameResponse = userNameResponse + randomUserId;
-    // console.log(userNameResponse)
+    //add to the name given by a user a random generated number to ensure people are different
+    if (this.state.userSignedIn === false) {
+      userNameResponse = userNameResponse + randomUserId + ' (guest)';
+    } else {
+      userNameResponse = userNameResponse + randomUserId;
+    }
+    
 
     // if roomName = publiRoom (i.e. the public guest chat), add guest to their name, ID and 
    
@@ -226,10 +270,7 @@ class App extends Component {
         messageList: messageArray,
         userName: userNameResponse,
       })
-      let element = document.querySelector('.lastMessage');
-      setTimeout(function () {
-        element.scrollIntoView();
-      }, 100);
+      
     })
   }
 
@@ -265,12 +306,13 @@ class App extends Component {
 
     // find latest time / date
     const currentTime = Date(Date.now()).toString();
-
+    // strip of GMT stuff
+    const newCurrentTime = currentTime.slice(0, 25);
     
     const messageObject = {
       userID: this.state.userName,
       userMessage: enqueuedMessage,
-      currentTime: currentTime,
+      currentTime: newCurrentTime,
       userFirebaseKey: '',
     }
     // push message object to firebase in the 'current' room with chatroom1 as the default if message isn't empty
@@ -287,6 +329,10 @@ class App extends Component {
         userFirebaseKey: '',
       })
     }
+    let element = document.querySelector('.lastMessage');
+    setTimeout(function () {
+      element.scrollIntoView();
+    }, 100);
   }
 
   changeHideState = (event) => {
@@ -365,7 +411,9 @@ class App extends Component {
       stop: false,
       userSignedIn: false,
       roomName: 'publicRoom', 
+      pastRoomNames: [],
     })
+    localStorage.clear()
   }
 
     // 3rd PAGE (PUBLIC CHAT) FUNCTIONALITY
@@ -439,10 +487,8 @@ class App extends Component {
         if (chatroom.toString() == roomName.toString()) {
           matchOnce.push('match')
         } else {
-          console.log(matchOnce)
         }
       }
-      console.log(matchOnce)
       if (matchOnce.length > 0) {
         this.setState({
           stop: false,
@@ -452,7 +498,6 @@ class App extends Component {
           stop: true,
         })
       }
-      console.log(matchOnce)
     })
     setTimeout(() => {
       console.log(this.state.stop)
@@ -485,13 +530,65 @@ class App extends Component {
     }, 500);
 
   }
+
+
+  // check if UserID in firebase === current signed in User in state.
+  // if they are the same, pull the room name
+
+  findRoomsUserIsIn = () => {
+    // const chatrooms = firebase.database().ref('chatrooms');
+    const dbRef = firebase.database().ref();
+
+
+    // pull and clean the firebase objects into array of objects that can be iterated through
+    dbRef.on('value', (data) => {
+      let chatroomsArray = [];
+      let finalRoomsArray = [];
+      let usersAndRooms = data.val();
+      for (let rooms in usersAndRooms) {
+        chatroomsArray.push(usersAndRooms[rooms])
+      }
+      // then next loops together. In short, we want to delve into every message in our database and compare the sender to the current user. 
+      // For any message the current user has sent, store the room that it was sent in our state
+      for (let roomName in chatroomsArray[0]) {
+
+        for (let messages in chatroomsArray[0][roomName]) {
+          
+          if (chatroomsArray[0][roomName][messages].userID.includes(this.state.userName.toLowerCase())) {
+            finalRoomsArray.push(roomName)
+          }
+        }
+      }
+      // filter duplicates from array
+      let cleanedFinalArray = [...new Set(finalRoomsArray)]
+      console.log(cleanedFinalArray)
+      
+
+      if (cleanedFinalArray.length > 0) {
+        this.setState({
+          pastRoomNames: cleanedFinalArray,
+        })
+      } else {
+        this.setState({
+          pastRoomNames: ['you have no past rooms so lets get started above!'],
+        })
+      }
+      
+    })
+  }
+
+  // appendRoomsToScreen = () => [
+  //   setTimeout(() => { 
+  //   console.log(this.state.pastRoomNames)
+  //   }, 500)
+  // ]
   
   render() {
     return (
       <div className="App">
           {
-             this.state.publicJoin 
-             ? 
+            this.state.publicJoin 
+            ? 
             <PublicChat statusChat={this.state.roomName} userInput={this.state.userInput} handleChange={this.handleChange} handleSubmit={this.handleSubmit} messageList={this.state.messageList} hideClassName={this.state.hideClassName} removeMessage={this.removeMessage} changeHideState={this.changeHideState} removeChat={this.removeChat} goBackToStart={this.goBackToStart}/>
            
              : 
@@ -505,21 +602,17 @@ class App extends Component {
                 :
                 (this.state.privateJoin
                   ?
-                  <PublicChat userName={this.state.userName} statusChat={this.state.roomName} userInput={this.state.userInput} handleChange={this.handleChange} handleSubmit={this.handleSubmit} messageList={this.state.messageList} hideClassName={this.state.hideClassName} removeMessage={this.removeMessage} changeHideState={this.changeHideState} removeChat={this.removeChat} goBackToStart={this.goBackToStart} />
+                  <PublicChat pastRoomNames={this.state.pastRoomNames} userName={this.state.userName} statusChat={this.state.roomName} userInput={this.state.userInput} handleChange={this.handleChange} handleSubmit={this.handleSubmit} messageList={this.state.messageList} hideClassName={this.state.hideClassName} removeMessage={this.removeMessage} changeHideState={this.changeHideState} removeChat={this.removeChat} goBackToStart={this.goBackToStart} />
                   :
-                <RoomPage goBackToStart={this.goBackToStart} handleChange={this.handleChange} createRoom={this.createRoom} joinRoom={this.joinRoom} userName={this.state.userName}/>
+                  <RoomPage pastRoomNames={this.state.pastRoomNames} goBackToStart={this.goBackToStart} scrollDown={this.scrollDown} handleChange={this.handleChange} createRoom={this.createRoom} joinRoom={this.joinRoom} userName={this.state.userName}/>
+           
                 )
               
               
               )
-             )
+                )
           }      
-        {/* {
-          // THREE.JS STRETCH
-          this.state.clicked 
-              ? <ThreeContainer />
-              : null
-        } */}
+      
       </div>
 
     )

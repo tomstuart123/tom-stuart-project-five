@@ -33,14 +33,14 @@ class LandingPage extends Component {
                         <form className='signInForm' onSubmit={this.props.signUpOrLogin}>
                             <p>Add a UserName</p>
                             <TextInput inputField='Name' className='signInName' handleChange={this.props.handleChange}/>
-                            <p>Add your Random Key</p>
+                            <p>Add a Random Key</p>
                             <TextInput inputField='Random key' className='signInRandomKey'  handleChange={this.props.handleChange}/>
                             <button type='submit' className={this.props.signOrLogin}>{this.props.signOrLogin}</button>
                         
                         </form>
                         <button className='switchSign'onClick={this.props.switchSign}>Already done this? Switch to Login page</button>
                         <div className='imageContainer'>
-                            <img src={landingImage} alt='sign saying how th e user will sign up eventually'></img>
+                            <img src={landingImage} alt='sign saying how the user will sign up eventually'></img>
                         </div>
                     </section>
                 </div>
