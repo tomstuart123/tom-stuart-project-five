@@ -9,13 +9,15 @@ class PublicChat extends Component {
             <div className='page2'>
                 <div className='page2Side'>
                     <div className='page2SideTop'>
-                    <h3>Your Existing Chatrooms</h3>
+                        <h3><a href='index.html'>Chattr</a><a href={'https://tomstuart123.github.io/chat-test/'}><span className='accent2'>-3</span></a></h3> 
+                        
                     </div>
                     <div className='page2SideBottom'>
+                    <p>Past Channels </p>
                     {this.props.pastRoomNames.map((room) => {
 
                         return (
-                            <a className='pastRooms'>{`- ${room}`}</a>
+                            <a className='pastRooms' id={room} onClick={this.props.switchRoom}>{`- ${room}`}</a>
                         )
                     })
                     }
@@ -25,13 +27,15 @@ class PublicChat extends Component {
                 <nav>
                     <section className='wrapper '>
                         <div>
-                            <li className='logo logo-landing'> <a href="index.html">Chattr<span className='accent'>-3</span></a> </li>
+                            <h3 className='navAlt'>  Chattr Room: {this.props.statusChat}
+
+                            </h3>
                             <li onClick={this.props.goBackToStart}>{this.props.userName} sign out </li>
                         </div>
                     </section>
                 </nav>
                 <section className='wrapper'>
-                <h2>Channel: {this.props.statusChat}</h2>
+                
                 <div className='messagesBox'>
                     <div>
                         {this.props.messageList.map((messageObject) => {

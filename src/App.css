@@ -33,7 +33,7 @@ p, button, input {
 button {
   width: 200px;
   padding: 5px;
-  background: #e6ca85;
+  background: #e4ac66;
   font-weight: 500;
   border: none;
 }
@@ -42,7 +42,7 @@ button:hover {
   padding: 5px;
   background: #f0efef;
   color: rgb(32, 32, 30);
-  border: #e6ca85 solid 1px;
+  border: #e4ac66 solid 1px;
 }
 
 html {
@@ -51,9 +51,20 @@ html {
 
 .accent {
   font-size: 0.8rem;
-  color: #e6ca85;
+  color: #e4ac66;
   transition: font-size 0.5s;
-
+}
+.accent2 {
+  font-size: 0.7rem;
+  color: black;
+  text-decoration: none;
+  list-style: none;
+  transition: font-size 0.5s;
+}
+.accent2:hover {
+  font-size: 0.8rem;
+  color: black;
+  text-decoration: none;
 }
 
 .accent:hover {
@@ -112,6 +123,11 @@ nav a {
     text-decoration: none;
 }
 
+.navAlt {
+  margin-top: 0px;
+  font-size: 1.4rem;
+}
+
 nav .logo a {
     font-size: 1.6rem;
     transition: font-size 0.5s;
@@ -129,6 +145,7 @@ nav a:hover{
   color: rgb(32, 32, 30);
   font-weight: 550;
   font-size: 1rem;
+  margin-top: 7px;
 }
 
 /* LANDING PAGE */
@@ -208,12 +225,17 @@ nav a:hover{
 .landingPageTop button, .landingPageTop input, .landingPageBottom button, .landingPageBottom input {
   /* margin: 0 auto; */
   width: 30%;
+  
 }
+
+.landingPageBottom button {
+  background: #e3ba73;
+} 
 
 .landingPageBottom .switchSign {
   background: transparent;
   border: none;
-  color: #ae9a67;
+  color: #e1a742;
   padding-left: 2px;
   margin-top: 20px;
   font-size: 0.75rem;
@@ -257,7 +279,6 @@ nav a:hover{
 .page2 nav .wrapper, .roomPage nav .wrapper {
     height: 100%;
 }
-
 /* ROOM PAGE */
 
 .roomPageTop {
@@ -323,7 +344,7 @@ nav a:hover{
 }
 
 .existingRoomButton:hover {
-  color: #e6ca85;
+  color: #e4ac66;
   background: none;
   border:none;
 
@@ -339,7 +360,11 @@ nav a:hover{
 
 .pastRooms {
   margin: 0px 3px;
+  cursor: pointer;
+}
 
+.pastRooms:hover {
+  color: #e4ac66;
 }
 
 
@@ -357,29 +382,52 @@ nav a:hover{
 
 .page2Side {
   width: 20%;
-  padding: 2.5%;
-  background: #3B3B3C;
+  background: white;
   color: white;
+  border: 1px black solid;
 }
+
+.page2SideTop a {
+  text-decoration: none;
+  color: black;
+}
+
 
 .page2SideTop {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  height: 20%;
+  height: 17.5%;
+  background: #e1a964;
+  padding: 20px 7.5%;
 }
 
 .page2SideBottom {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  height: 80%;
+  height: 82.5%;
+  padding: 20px 7.5%;
+  background: #2e2e2e;
+}
+.page2SideTop h3{
+  font-size: 1.5rem;
+  margin: 15px 0px;
+  color: rgb(32, 32, 30);
 }
 
-.page2SideBottom a {
+.page2SideBottom a, .page2SideBottom p {
   margin: 15px 0;
-  font-size: 1.8rem;
+  font-size: 0.8rem;
+
 }
+
+.page2SideBottom p {
+  font-weight:bold;
+  font-size: 1rem;
+}
+
+
 
 .messageInputForm {
   display: flex;
@@ -489,6 +537,7 @@ nav a:hover{
   }
   .landingPageBottom .switchSign {
       margin-top: 20px;
+
   }
 
   .landingPageBottom .imageContainer {
@@ -561,6 +610,20 @@ nav a:hover{
   .introText {
     display: none;
   }
+
+  .page2Main {
+    width: 100%;
+  }
+
+  .page2Side {
+    display: none;
+  }
+
+  .navAlt {
+  font-size: 1.2rem;
+  }
+
+
 
 }
 

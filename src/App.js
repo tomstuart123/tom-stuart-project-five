@@ -59,8 +59,7 @@ class App extends Component {
       stop: false,
       userSignedIn: false,
       roomName: 'publicRoom', 
-      priorRoomMessage: `You currently don't have any rooms set up`,
-      pastRoomNames: [],
+      pastRoomNames: [`You haven't chatted in other rooms rooms`, '...yet'],
     }
   }
 
@@ -241,13 +240,11 @@ class App extends Component {
     // if (userNameResponse === '') {
     //   userNameResponse = prompt('try again, what is your name?')
     // }
-    const randomUserId = Math.floor(Math.random() * 100);
+    const randomUserId = Math.floor(Math.random() * 10);
     //add to the name given by a user a random generated number to ensure people are different
     if (this.state.userSignedIn === false) {
       userNameResponse = userNameResponse + randomUserId + ' (guest)';
-    } else {
-      userNameResponse = userNameResponse + randomUserId;
-    }
+    } 
     
 
     // if roomName = publiRoom (i.e. the public guest chat), add guest to their name, ID and 
@@ -475,10 +472,24 @@ class App extends Component {
     }, 300);
   }
 
-  joinRoom = (e) => {
-    e.preventDefault();
+  switchRoom = (e) => {
+    this.setState({
+      userInput: e.target.id,
+    });
+    setTimeout(() => {
+      this.joinRoom()
+    }, 300);
+  }
 
+  joinRoom = (e) => {
+    if (e) {
+      e.preventDefault();
+    }
+    
+    console.log(this.state.userInput);
     let roomName = this.state.userInput;
+
+
     const chatrooms = firebase.database().ref('chatrooms');
     chatrooms.on('value', (chatrooms) => {
       let chatroomsCleaned = chatrooms.val();
@@ -500,7 +511,6 @@ class App extends Component {
       }
     })
     setTimeout(() => {
-      console.log(this.state.stop)
       // only run if user has input both text fields
       if (roomName === '') {
         alert('please fill a room name')
@@ -518,6 +528,7 @@ class App extends Component {
           privateJoin: true,
         })
         let name = this.state.userName
+        console.log(this.groupChatStart)
         this.groupChatStart(name);
       } else {
         alert('sorry there are no room names with that title. Try again.')
@@ -560,17 +571,20 @@ class App extends Component {
         }
       }
       // filter duplicates from array
-      let cleanedFinalArray = [...new Set(finalRoomsArray)]
-      console.log(cleanedFinalArray)
-      
-
-      if (cleanedFinalArray.length > 0) {
+      let cleanedFinalArray = [...new Set(finalRoomsArray)]      
+      if (cleanedFinalArray.length === 0) {
+        
+        this.setState({
+          pastRoomNames: [`You haven't chatted in other rooms rooms yet`]
+        })
+      }
+      else if (cleanedFinalArray[0] === 'publicRoom') {
+        this.setState({
+          pastRoomNames: [`Only chatted as a guest`]
+        })
+      } else if (cleanedFinalArray.length > 0) {
         this.setState({
           pastRoomNames: cleanedFinalArray,
-        })
-      } else {
-        this.setState({
-          pastRoomNames: ['you have no past rooms so lets get started above!'],
         })
       }
       
@@ -589,7 +603,7 @@ class App extends Component {
           {
             this.state.publicJoin 
             ? 
-            <PublicChat statusChat={this.state.roomName} userInput={this.state.userInput} handleChange={this.handleChange} handleSubmit={this.handleSubmit} messageList={this.state.messageList} hideClassName={this.state.hideClassName} removeMessage={this.removeMessage} changeHideState={this.changeHideState} removeChat={this.removeChat} goBackToStart={this.goBackToStart}/>
+            <PublicChat switchRoom={this.switchRoom} pastRoomNames={this.state.pastRoomNames} statusChat={this.state.roomName} userInput={this.state.userInput} handleChange={this.handleChange} handleSubmit={this.handleSubmit} messageList={this.state.messageList} hideClassName={this.state.hideClassName} removeMessage={this.removeMessage} changeHideState={this.changeHideState} removeChat={this.removeChat} goBackToStart={this.goBackToStart}/>
            
              : 
              (!this.state.userSignedIn 
@@ -598,11 +612,11 @@ class App extends Component {
               :
               (this.state.privateCreate
                 ?
-                <PublicChat userName={this.state.userName} statusChat={this.state.roomName} userInput={this.state.userInput} handleChange={this.handleChange} handleSubmit={this.handleSubmit} messageList={this.state.messageList} hideClassName={this.state.hideClassName} removeMessage={this.removeMessage} changeHideState={this.changeHideState} removeChat={this.removeChat} goBackToStart={this.goBackToStart} />
+                <PublicChat switchRoom={this.switchRoom} pastRoomNames={this.state.pastRoomNames} userName={this.state.userName} statusChat={this.state.roomName} userInput={this.state.userInput} handleChange={this.handleChange} handleSubmit={this.handleSubmit} messageList={this.state.messageList} hideClassName={this.state.hideClassName} removeMessage={this.removeMessage} changeHideState={this.changeHideState} removeChat={this.removeChat} goBackToStart={this.goBackToStart} />
                 :
                 (this.state.privateJoin
                   ?
-                  <PublicChat pastRoomNames={this.state.pastRoomNames} userName={this.state.userName} statusChat={this.state.roomName} userInput={this.state.userInput} handleChange={this.handleChange} handleSubmit={this.handleSubmit} messageList={this.state.messageList} hideClassName={this.state.hideClassName} removeMessage={this.removeMessage} changeHideState={this.changeHideState} removeChat={this.removeChat} goBackToStart={this.goBackToStart} />
+                  <PublicChat switchRoom={this.switchRoom} pastRoomNames={this.state.pastRoomNames} userName={this.state.userName} statusChat={this.state.roomName} userInput={this.state.userInput} handleChange={this.handleChange} handleSubmit={this.handleSubmit} messageList={this.state.messageList} hideClassName={this.state.hideClassName} removeMessage={this.removeMessage} changeHideState={this.changeHideState} removeChat={this.removeChat} goBackToStart={this.goBackToStart} />
                   :
                   <RoomPage pastRoomNames={this.state.pastRoomNames} goBackToStart={this.goBackToStart} scrollDown={this.scrollDown} handleChange={this.handleChange} createRoom={this.createRoom} joinRoom={this.joinRoom} userName={this.state.userName}/>
            

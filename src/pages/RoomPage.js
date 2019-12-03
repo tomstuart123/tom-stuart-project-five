@@ -10,7 +10,7 @@ class RoomPage extends Component {
                 <nav>
                     <section className='wrapper '>
                         <div>
-                            <li className='logo logo-landing'> <a href="index.html">Chattr<span className='accent'>-3</span></a> </li>
+                            <li className='logo logo-landing'> <a href="index.html">Chattr</a><a href={'https://tomstuart123.github.io/chat-test/'}><span className='accent'>-3</span></a> </li>
                             <li onClick={this.props.goBackToStart}>Sign Out of {this.props.userName}</li>
                         </div>
                     </section>
@@ -32,12 +32,14 @@ class RoomPage extends Component {
                             </form>
                         </div>
                             <button onClick={this.props.scrollDown} className='existingRoomButton'> Tip: Your last chatrooms were called:  
-                            {this.props.pastRoomNames.map((room) => {
+                            {
+                                this.props.pastRoomNames.map((room) => {
                                     
                                     return (
                                         <span className='pastRooms'>{`- ${room}`}</span>
                                     )
                                 })
+                                  
                             }
                             </button>
                     </section>
