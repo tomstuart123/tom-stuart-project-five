@@ -126,19 +126,28 @@ nav a {
 .navAlt {
   margin-top: 0px;
   font-size: 1.4rem;
+  width: 60%;
+  padding-left: 5%;
 }
-
-nav .logo a {
-    font-size: 1.6rem;
+.navAlt:hover {
+  font-size: 1.4rem;
+}
+nav a {
+    font-size: 1.4rem;
     transition: font-size 0.5s;
 }
 
 nav a:hover{
-    font-size: 1.7rem;
+    font-size: 1.4rem;
 }
 
-.page2 nav a{
-  color: rgb(32, 32, 30)
+.page2 nav a {
+  color: rgb(32, 32, 30);
+  
+}
+
+.page2 nav a:hover {
+  font-size: 1.4rem;
 }
 
 .page2 nav li {
@@ -146,6 +155,7 @@ nav a:hover{
   font-weight: 550;
   font-size: 1rem;
   margin-top: 7px;
+  padding-right: 5%;
 }
 
 /* LANDING PAGE */
@@ -165,9 +175,6 @@ nav a:hover{
   width: 100%;
   
 }
-
-
-
 
 .landingPageTop h1, .landingPageBottom h1 {
   font-size: 2.3rem;
@@ -223,7 +230,6 @@ nav a:hover{
 }
 
 .landingPageTop button, .landingPageTop input, .landingPageBottom button, .landingPageBottom input {
-  /* margin: 0 auto; */
   width: 30%;
   
 }
@@ -367,9 +373,6 @@ nav a:hover{
   color: #e4ac66;
 }
 
-
-
-
 /* CHAT PAGE */
 .page2 {
   display: flex;
@@ -378,6 +381,11 @@ nav a:hover{
 
 .page2Main {
   width: 80%;
+}
+
+.page2Main a:hover {
+  font-size: 1.2rem;
+  color: #e4ac66;
 }
 
 .page2Side {
@@ -434,25 +442,35 @@ nav a:hover{
   flex-direction: row;
   justify-content: space-between;
   font-size: 0.8rem;
+  width: 90%;
+  margin: 0 auto;
 }
+
 /* Messages Box */
 .messagesBox {
-    min-height: 280px;
-    max-height: 280px;
+    min-height: 380px;
+    max-height: 380px;
+    margin: 0 auto;
     margin-top: 30px;
-    width: 100%;
+    width: 90%;
     border: 1px rgb(32, 32, 30) solid;
     text-align: left;
     overflow-y: auto;
     padding: 10px;
     background: white;
 }
+
+
+
 .totalMessages p {
-  font-size: 0.8rem;
+  font-size: 1rem;
   padding: 3px 0px;
+  
 }
 
-
+.rightText {
+  text-align: right;
+}
 
 .userMessage, .messageInputForm button, .clear, .page2 button {
   width: 85%;
@@ -488,7 +506,7 @@ nav a:hover{
   display: none;
 }
 
-.dateText {
+#dateText {
   margin-bottom: 7.5px;
 }
 
@@ -555,6 +573,11 @@ nav a:hover{
     width: 95%;
   }
 
+  .totalMessages p {
+  font-size: 0.9rem;
+  
+}
+
 
 
 }
@@ -619,10 +642,27 @@ nav a:hover{
     display: none;
   }
 
-  .navAlt {
-  font-size: 1.2rem;
+  .messagesBox {
+    width: 100%;
   }
 
+  .navAlt {
+    font-size: 1.2rem;
+  }
+
+  .totalMessages p {
+  font-size: 0.9rem;
+  
+  }
+
+  nav .logo a {
+    font-size: 1.6rem;
+    transition: font-size 0.5s;
+}
+
+  nav a:hover{
+      font-size: 1.7rem;
+  }
 
 
 }
@@ -636,6 +676,11 @@ nav a:hover{
 
   .roomPage .wrapper, .page2 .wrapper  {
     height: 725px;
+  }
+
+  .totalMessages p {
+  font-size: 0.9rem;
+  
   }
 }
 

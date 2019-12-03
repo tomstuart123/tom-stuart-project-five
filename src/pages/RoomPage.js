@@ -22,12 +22,14 @@ class RoomPage extends Component {
                         <div className='roomPageForms'> 
                             <form className='createRoomInputForm' onSubmit={this.props.createRoom}>
                                 <h3>Create a new chat room</h3>
-                                <TextInput inputField='Name for the new room' className='createRoom' handleChange={this.props.handleChange} />
+                                <label class='visuallyHidden' for='createRoomName'></label>
+                                <TextInput name='createRoomName' inputField='Name for the new room' className='createRoom' handleChange={this.props.handleChange} />
                                 <button type='submit' className='submitRoom'>Create</button>
                             </form>
                             <form className='joinRoomInputForm' onSubmit={this.props.joinRoom}>
                                 <h3>Join an existing chat room</h3>
-                                <TextInput inputField='Existing room name' className='joinRoom' handleChange={this.props.handleChange} />
+                                <label class='visuallyHidden' for='joinRoomName'></label>
+                                <TextInput name='joinRoomName' inputField='Existing room name' className='joinRoom' handleChange={this.props.handleChange} />
                                 <button type='submit' className='submitJoin'>Join</button>
                             </form>
                         </div>

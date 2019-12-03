@@ -5,39 +5,6 @@ import PublicChat from './pages/PublicChat';
 import LandingPage from './pages/LandingPage';
 import RoomPage from './pages/RoomPage';
 
-
-
-// TOD
-  // WEB TO DO 
-    // add signed in colour to the page
-    // add sending of pics / gifs
-
-  // VR TO DO
-    // Add VR objects to VR and change the background
-    // typing on mobile in vr
-
-
-// PRESENTATION
-  // Lots to show you so will take you through the parts of my app as I built them
-  // Public Chat (message with Juan)
-    // highlight that we are guest users
-    // differentiated by numbers
-    // delete your messages but not others
-  
-  // Sign in functionality (message with russell)
-    // Create a room - 
-    // Join a room - 
-    // Notice we stay signed in throughout the process
-    // and we can sign out at anytime
-  
-  // But the vision of this project isn't just a chat app. The reason I built the 3 at the end was that I eventually would like to work in Virtual reality and James' work inspired me 
-    // Juan as messager of the public chat
-    // This is react 360 - things are difficult here. 
-    // <Text> elements are used and <View>
-    // 
-
-
-
 class App extends Component {
   constructor() {
     super();
@@ -59,12 +26,13 @@ class App extends Component {
       stop: false,
       userSignedIn: false,
       roomName: 'publicRoom', 
-      pastRoomNames: [`You haven't chatted in other rooms rooms`, '...yet'],
+      pastRoomNames: [`You haven't chatted in other rooms rooms`],
+      rightText: 'rightText',
     }
   }
 
   componentDidMount = () => {
-    // store sign in via local storage
+    // make sure that user stays signed in even on page reload. As soon as local storage sign in is updated, also update the userSignIn in state
     if (localStorage.userSignedIn === 'true') {
       this.setState({
         userSignedIn: true,
@@ -73,14 +41,15 @@ class App extends Component {
       })    
     }
 
-    // if userID in firebase === 
+    // run function on page load to track which rooms the user is in
     this.findRoomsUserIsIn();
 
     // }
   }
 
-  // LANDING PAGE FUNCTIONALITY
+  // LANDING PAGE FUNCTIONALITY AND FUNCTIONS
 
+  // function to allow on landing page button click the switch of text from sign up (user) to login (user)
   switchSign= () => {
     if (this.state.switchSign === 'Sign up') {
       this.setState({
@@ -93,9 +62,9 @@ class App extends Component {
     }
   }
   
+  // depending on the login or sign up above, run a function to login user or sign up the user
   signUpOrLogin = (e) => {
     e.preventDefault();
-    
     let name = this.state.userInput;
     let pw = this.state.userInput2;
     if (this.state.switchSign === 'Sign up') {
@@ -106,12 +75,12 @@ class App extends Component {
     }      
   }
 
+  // sign up funciton adds a user object with sign in details to firebase and runs various checks to stop (similar usernames being uploaded, no text input etc)
   signUp = (name, pw) => {  
     // pull users area of firebase
     const users = firebase.database().ref('users');
     // pull current time 
     const currentTime = Date(Date.now()).toString();
-    
 
       // create object with details of sign up
     const userObject = {
@@ -119,13 +88,13 @@ class App extends Component {
         userPW: pw,
         signUpTime: currentTime,
     }
-      // check if someone already has both these userID / password
+      // check if someone already has this userID. This will stop people getting confused with who they are talking to
       users.on('value', (users) => {
         
         let usersCleaned = users.val();
         for (let user in usersCleaned) {
           
-          if (usersCleaned[user].userID == name && usersCleaned[user].userPW.toString() == pw) {
+          if (usersCleaned[user].userID == name ) {
             this.setState({
               stop: true,
             })
@@ -133,24 +102,25 @@ class App extends Component {
         }
       })
       
+      // make sure the state above has finished before running
       setTimeout(() => { 
         // only run if user has input both text fields
         if (!pw || !name) {
           alert('please fill both sign in fields')
         } 
-        // only run it if the stop status set above is set to false
+        // only run it if the stop status set above is set to false.
         else if (this.state.stop === true) {
-          alert('sorry someone already has that key with that user name. Try again.')
+          alert('sorry someone already has that user name. Try again.')
           this.setState({
             stop: false,
           })
         } 
-        // error if already signed in 
+        // this error shouldn't need to run, but just in case the user is back on the landing page whilst signed in, make them sign up as another user 
         else if (this.state.userSignedIn === true) {
           alert('Already signed in I am afraid')
         } 
         
-        // push user to database if the two conditionals above are false
+        // If none of the above are true, push user to database  and update the state as well as local storage
         else {
             const pushID = users.push(userObject);
             userObject.userFirebaseKey = pushID.key;
@@ -173,14 +143,15 @@ class App extends Component {
     
   } 
 
+  // similar to the sign up function above but instead checks database for user input. If input aligns, sign them in as that user in local storage and state
   login = (name, pw) => {
-    // if already signed in, highlight to user
+    // This shouldn't need to run but just in case, highlight to user that they are already signed in
     if (this.state.userSignedIn === true) {
       alert('Already signed in. sign out when you can')
       return
     }
 
-    // check login details vs. database
+    // check login details vs. database. If the same, then set 
     const users = firebase.database().ref('users');
     users.on('value', (users) => {
 
@@ -206,53 +177,43 @@ class App extends Component {
       }
 
     })
-    
-    // if login match, run get started function below
-  }
+    }
 
   adjustPublicJoinStatus = (e) => {
     e.preventDefault();
-    // already stored their input in userInput for storage on this submit
+    // already stored their input in userInput for storage on the 'join as guest' landing page button
     let userName = this.state.userInput;
 
-    // set state to true
+    // set state to true as they are public joining
     this.setState({
       publicJoin: true,
       userInput: '',
     })
-    // public app start
+    // run the group chat function but with details above set to public join so they don't join any private rooms
     this.groupChatStart(userName);
   }
 
+  // a universal scroll down function. The site never has more than two sections per page so this always scrolls the user's viewport to the second section
   scrollDown = (e) => {
     e.preventDefault();
     window.scrollBy(0, 1000);
-    console.log('hello')
   }
 
+  // MAIN CHAT FUNCTIONALITY 
 
-  // MAIN PUBLIC / PRIVATE CHAT FUNCTIONALITY & 
-
+  // The core funciton that creates the messaging page. This runs either for public guest chat, joining private rooms or creating private rooms
   groupChatStart = (name) => {
     // ask for user name and store in variable
     let userNameResponse = name;
-    // if user doesn't give a name, make them
-    // if (userNameResponse === '') {
-    //   userNameResponse = prompt('try again, what is your name?')
-    // }
-    const randomUserId = Math.floor(Math.random() * 10);
-    //add to the name given by a user a random generated number to ensure people are different
-    if (this.state.userSignedIn === false) {
-      userNameResponse = userNameResponse + randomUserId + ' (guest)';
-    } 
     
-
-    // if roomName = publiRoom (i.e. the public guest chat), add guest to their name, ID and 
-   
+    // Users who are signed in can be told apart as no user can have the same username. To stop clashes for guests though, add ('guest') to their name 
+    if (this.state.userSignedIn === false) {
+      userNameResponse = userNameResponse + ' (guest)';
+    } 
 
     // pull firebase
     const chatrooms = firebase.database().ref('chatrooms');
-    // always listen to firebase database chatrooms. On changes to database, update state
+    // always listen to firebase database chatroom messages. On changes to messages, update state. This state messageList is then appended to the page by various components in PublicChat.js
     chatrooms.on('value', (chatroom) => {
       const chatrooms = chatroom.val();
       const currentRoom = this.state.roomName;
@@ -271,7 +232,9 @@ class App extends Component {
     })
   }
 
-  // GENERAL TEXT INPUT FUNCTIONS
+  // GENERAL TEXT INPUT FUNCTIONS 
+
+  // Ensure that whenever any text input box is written in, the state of userINput is updated. We will use this data in handle submit below
   handleChange = (event) => {
     // when input text box changes, update state of the userInput dynamically
 
@@ -294,6 +257,7 @@ class App extends Component {
     }
   }
 
+  // On submit of any button (with text input), update firebase with the userInput written by the user in function above. 
   handleSubmit = (event) => {
     event.preventDefault();
     // set firebase object of chatroom
@@ -303,23 +267,24 @@ class App extends Component {
 
     // find latest time / date
     const currentTime = Date(Date.now()).toString();
-    // strip of GMT stuff
+    // strip of wasted GMT stuff from the data
     const newCurrentTime = currentTime.slice(0, 25);
     
+    // create message box ready to go to firebase
     const messageObject = {
       userID: this.state.userName,
       userMessage: enqueuedMessage,
       currentTime: newCurrentTime,
       userFirebaseKey: '',
     }
-    // push message object to firebase in the 'current' room with chatroom1 as the default if message isn't empty
+    // push message object to firebase in the 'current' room with publicRoom (guest room) as the default if message isn't empty
     if (enqueuedMessage) {
       // store the pushID given to us from firebase
       const pushID = chatrooms.child(this.state.roomName).push(messageObject);
       // update the firebase key with variable pushID
       messageObject.userFirebaseKey = pushID.key;
       chatrooms.child(this.state.roomName).child(pushID.key).update(messageObject);
-
+      // empty state ready for the next user message
       this.setState({
         userInput: '',
         currentTime: '',
@@ -332,62 +297,22 @@ class App extends Component {
     }, 100);
   }
 
-  changeHideState = (event) => {
-    // if hide button clicked, change hideClass to true
-    this.setState({
-      hideClass: !this.state.hideClass,
-    })
-    //run hidechat
-    this.hideChat();
-  }
-
-  hideChat = () => {
-    // if user has clicked the button and hideClass state is true, then add the hideClassName to all the li messages 
-    if (this.state.hideClass === true) {
-      this.setState({
-        hideClassName: 'hide',
-      })
-    } 
-    // else, remove hideClass name from all li messages 
-    else {
-      this.setState({
-        hideClassName: '',
-      })
-    }
-  }
-
-  removeChat = (event) => {
-    const chatrooms = firebase.database().ref('chatrooms');
-    const userCertain = window.confirm('Are you sure you want to delete the chat for all participants?')
-
-    if (userCertain) {
-      chatrooms.child(this.state.roomName).set({
-        0: {
-          userID: "Chattr Bot",
-          userMessage: "Start chat below"
-        }
-      });
-    } else {
-      return
-    }
-
-  }
-
   removeMessage = (event) => {
     // pull the firebase chatroom necessary
     const chatrooms = firebase.database().ref('chatrooms');
     // compare current username vs. username held in class on the event clicked on (see total messages span)
-    if (this.state.userName === event.target.className) 
+    if (this.state.userName === event.target.className)
     // if they are the same, then go into database and find the clicked on message's firebase key. In this firebase key area of your database, delete it
     {
-      chatrooms.child(this.state.roomName).child(event.target.id).remove();  
-    } 
+      chatrooms.child(this.state.roomName).child(event.target.id).remove();
+    }
     // else alert the user that they can't delete other people's messages
     else {
       alert(`You can only delete your own messages`)
     }
   }
 
+  // the sign out button. If clicked, it resets all the state which returns users to the landing page
   goBackToStart = (e) => {
     e.preventDefault();
     this.setState({
@@ -397,8 +322,6 @@ class App extends Component {
       userInput2: '',
       userName: 'Tom',
       userPW: '',
-      hideClass: true,
-      hideClassName: '',
       currentTime: '',
       userFirebaseKey: '',
       publicJoin: false,
@@ -409,22 +332,25 @@ class App extends Component {
       userSignedIn: false,
       roomName: 'publicRoom', 
       pastRoomNames: [],
+      rightText: 'rightText',
     })
     localStorage.clear()
   }
 
-    // 3rd PAGE (PUBLIC CHAT) FUNCTIONALITY
-  
+  // 2nd PAGE (USER SIGNED INTO THE HUB) FUNCTIONALITY
+
+  // create a room functionality
   createRoom = (e) => {
     e.preventDefault();
     let roomName = this.state.userInput;
 
+    // pull database
     const chatrooms = firebase.database().ref('chatrooms');
     chatrooms.on('value', (chatrooms) => {
       let chatroomsCleaned = chatrooms.val();
       
       for (let chatroom in chatroomsCleaned) {
-
+        // create a barrier for running the function if the chatroom name already exists
         if (chatroom.toString() == roomName.toString()) {
           this.setState({
             stop: true,
@@ -435,11 +361,10 @@ class App extends Component {
     })
 
     setTimeout(() => { 
-    // only run if user has input both text fields
+    // only run if user has input both text fields 
     if (roomName === '') {
       alert('please fill a room name')
     } 
-    // update the roomName to userInput if exists
     // only run it if the stop status set above is set to false
       else if (this.state.stop === true) {
       alert('sorry someone already has that room name. Try again.')
@@ -447,7 +372,7 @@ class App extends Component {
         stop: false,
       })
     }
-    
+    // create a room object ready to be pushed to database
     else {
       // remove push as not as clean a database
       let template = '0';
@@ -459,19 +384,21 @@ class App extends Component {
           }
         }
       }
+      // push it to the database
       chatrooms.update(chatRoomObject);
       this.setState({
         roomName: roomName,
         userInput: '',
         privateCreate: true,
       })
-      // run append to page function that takes name as the only parameter
+      // run the group chat start function but with the details of created room above
       let name = this.state.userName;
       this.groupChatStart(name);
     }
     }, 300);
   }
 
+  // if in an existing room, run a function before join room, to make sure we join the room clicked on in the side bar of the public chat page
   switchRoom = (e) => {
     this.setState({
       userInput: e.target.id,
@@ -481,25 +408,26 @@ class App extends Component {
     }, 300);
   }
 
+  // similar to the create a room funciton. However, only allow the state to be updated to room details if the room input exists
   joinRoom = (e) => {
     if (e) {
       e.preventDefault();
     }
-    
-    console.log(this.state.userInput);
     let roomName = this.state.userInput;
 
-
+    // pull database
     const chatrooms = firebase.database().ref('chatrooms');
     chatrooms.on('value', (chatrooms) => {
       let chatroomsCleaned = chatrooms.val();
       let matchOnce = [];
+      // if room name input by user === chatroom in database then carry on, if not then stop
       for (let chatroom in chatroomsCleaned) {
         if (chatroom.toString() == roomName.toString()) {
           matchOnce.push('match')
         } else {
         }
       }
+      // based on above conditional either set stop to true of false
       if (matchOnce.length > 0) {
         this.setState({
           stop: false,
@@ -510,6 +438,7 @@ class App extends Component {
         })
       }
     })
+    // give the time for set state stop to run above
     setTimeout(() => {
       // only run if user has input both text fields
       if (roomName === '') {
@@ -518,39 +447,26 @@ class App extends Component {
       // update the roomName to userInput if exists
       // only run it if the stop status set above is set to false
       else if (this.state.stop === false) {
-        // alert('sorry there are no room names with that title. Try again.')
-        // this.setState({
-        //   stop: false,
-        // })
         this.setState({
           roomName: roomName,
           userInput: '',
           privateJoin: true,
         })
         let name = this.state.userName
-        console.log(this.groupChatStart)
         this.groupChatStart(name);
-      } else {
+      } // if no rooms matched, throw an alert
+      else {
         alert('sorry there are no room names with that title. Try again.')
         
       }
 
-      // else {
-      //   // remove push as not as clean a database
-      // }
     }, 500);
 
   }
 
-
-  // check if UserID in firebase === current signed in User in state.
-  // if they are the same, pull the room name
-
+  // a very tricky function> I had to check all the chatrooms for activity by the user. If the user had had past activity, these are appended to the page, and allow user to jump between rooms
   findRoomsUserIsIn = () => {
-    // const chatrooms = firebase.database().ref('chatrooms');
     const dbRef = firebase.database().ref();
-
-
     // pull and clean the firebase objects into array of objects that can be iterated through
     dbRef.on('value', (data) => {
       let chatroomsArray = [];
@@ -570,19 +486,23 @@ class App extends Component {
           }
         }
       }
-      // filter duplicates from array
-      let cleanedFinalArray = [...new Set(finalRoomsArray)]      
+      // filter duplicates from array so only unique rooms left
+      let cleanedFinalArray = [...new Set(finalRoomsArray)]     
+
+      // if array is short show that they haven't had activity
       if (cleanedFinalArray.length === 0) {
-        
         this.setState({
           pastRoomNames: [`You haven't chatted in other rooms rooms yet`]
         })
       }
+      // if only guest activity, show this
       else if (cleanedFinalArray[0] === 'publicRoom') {
         this.setState({
           pastRoomNames: [`Only chatted as a guest`]
         })
-      } else if (cleanedFinalArray.length > 0) {
+      } 
+      // otherwise pass the rooms the user has had activity in
+      else if (cleanedFinalArray.length > 0) {
         this.setState({
           pastRoomNames: cleanedFinalArray,
         })
@@ -590,33 +510,35 @@ class App extends Component {
       
     })
   }
-
-  // appendRoomsToScreen = () => [
-  //   setTimeout(() => { 
-  //   console.log(this.state.pastRoomNames)
-  //   }, 500)
-  // ]
+  
+  // final render function
+  // What page is shown to the user is based on conditionals. 
   
   render() {
     return (
       <div className="App">
           {
+            // If public join is true, create a public chat room as a guest
             this.state.publicJoin 
             ? 
-            <PublicChat switchRoom={this.switchRoom} pastRoomNames={this.state.pastRoomNames} statusChat={this.state.roomName} userInput={this.state.userInput} handleChange={this.handleChange} handleSubmit={this.handleSubmit} messageList={this.state.messageList} hideClassName={this.state.hideClassName} removeMessage={this.removeMessage} changeHideState={this.changeHideState} removeChat={this.removeChat} goBackToStart={this.goBackToStart}/>
-           
+            <PublicChat rightText={this.state.rightText} switchRoom={this.switchRoom} pastRoomNames={this.state.pastRoomNames} userName={this.state.userName} statusChat={this.state.roomName} userInput={this.state.userInput} handleChange={this.handleChange} handleSubmit={this.handleSubmit} messageList={this.state.messageList} removeMessage={this.removeMessage} goBackToStart={this.goBackToStart}/>
+            // If user not signed in or publicly joined, show the landing page
              : 
              (!this.state.userSignedIn 
               ? 
               <LandingPage publicJoin={this.adjustPublicJoinStatus} handleChange={this.handleChange} signUpOrLogin={this.signUpOrLogin} switchSign={this.switchSign} signOrLogin={this.state.switchSign} scrollDown={this.scrollDown}/>
               :
+              // if private room created, create a private chat room
+
               (this.state.privateCreate
                 ?
-                <PublicChat switchRoom={this.switchRoom} pastRoomNames={this.state.pastRoomNames} userName={this.state.userName} statusChat={this.state.roomName} userInput={this.state.userInput} handleChange={this.handleChange} handleSubmit={this.handleSubmit} messageList={this.state.messageList} hideClassName={this.state.hideClassName} removeMessage={this.removeMessage} changeHideState={this.changeHideState} removeChat={this.removeChat} goBackToStart={this.goBackToStart} />
+                <PublicChat rightText={this.state.rightText} switchRoom={this.switchRoom} pastRoomNames={this.state.pastRoomNames} userName={this.state.userName} statusChat={this.state.roomName} userInput={this.state.userInput} handleChange={this.handleChange} handleSubmit={this.handleSubmit} messageList={this.state.messageList} removeMessage={this.removeMessage}  goBackToStart={this.goBackToStart} />
                 :
+                // if private room joined, join a private chat room
+
                 (this.state.privateJoin
                   ?
-                  <PublicChat switchRoom={this.switchRoom} pastRoomNames={this.state.pastRoomNames} userName={this.state.userName} statusChat={this.state.roomName} userInput={this.state.userInput} handleChange={this.handleChange} handleSubmit={this.handleSubmit} messageList={this.state.messageList} hideClassName={this.state.hideClassName} removeMessage={this.removeMessage} changeHideState={this.changeHideState} removeChat={this.removeChat} goBackToStart={this.goBackToStart} />
+                  <PublicChat rightText={this.state.rightText} switchRoom={this.switchRoom} pastRoomNames={this.state.pastRoomNames} userName={this.state.userName} statusChat={this.state.roomName} userInput={this.state.userInput} handleChange={this.handleChange} handleSubmit={this.handleSubmit} messageList={this.state.messageList} removeMessage={this.removeMessage} goBackToStart={this.goBackToStart} />
                   :
                   <RoomPage pastRoomNames={this.state.pastRoomNames} goBackToStart={this.goBackToStart} scrollDown={this.scrollDown} handleChange={this.handleChange} createRoom={this.createRoom} joinRoom={this.joinRoom} userName={this.state.userName}/>
            
@@ -634,9 +556,3 @@ class App extends Component {
   }
 
 export default App;
-
-
-// THREE JS STRETCH
-// combined three js with react by following this guide - https://blog.bitsrc.io/starting-with-react-16-and-three-js-in-5-minutes-3079b8829817
-
-// split three.js into multiple files with guide - https://medium.com/javascript-in-plain-english/javascript-in-3d-an-introduction-to-three-js-780f1e4a2e6d

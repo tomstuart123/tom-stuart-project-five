@@ -27,7 +27,7 @@ class PublicChat extends Component {
                 <nav>
                     <section className='wrapper '>
                         <div>
-                            <h3 className='navAlt'>  Chattr Room: {this.props.statusChat}
+                            <h3 className='navAlt'> <a href='index.html'>Chattr</a> Room: {this.props.statusChat}
 
                             </h3>
                             <li onClick={this.props.goBackToStart}>{this.props.userName} sign out </li>
@@ -38,21 +38,27 @@ class PublicChat extends Component {
                 
                 <div className='messagesBox'>
                     <div>
-                        {this.props.messageList.map((messageObject) => {
+                        {
+                        this.props.messageList.map((messageObject) => {
+                        if (messageObject.userID === this.props.userName) {
                             return (
-                        <TotalMessages userID={messageObject.userID} userMessage={messageObject.userMessage} hidden={this.props.hideClassName} sendDate={messageObject.currentTime} cancelMessage={this.props.removeMessage} firebaseKey={messageObject.userFirebaseKey} />
+                                <TotalMessages rightText={this.props.rightText} userID={messageObject.userID} userMessage={messageObject.userMessage} sendDate={messageObject.currentTime} cancelMessage={this.props.removeMessage} firebaseKey={messageObject.userFirebaseKey} />
+                            )
+                        } else {
+                            return (
+                                <TotalMessages userID={messageObject.userID} userMessage={messageObject.userMessage} sendDate={messageObject.currentTime} cancelMessage={this.props.removeMessage} firebaseKey={messageObject.userFirebaseKey} />
                             )
                         }
-                        )}
+                            
+                        })
+                        }
                         {/* empty div so we can scroll to the newest message on message send */}
                         <div className='lastMessage'></div>
 
                     </div>
                 </div>
                 <MessageInput userInput={this.props.userInput} trackChanges={this.props.handleChange} submitStore={this.props.handleSubmit} />
-                {/* <button className="clear" onClick={this.props.changeHideState}>Be Private - Hide & UnHide chat just for me</button> */}
-                <button className="clear" onClick={this.props.removeChat}>Remove Chat Permanently for everyone </button>
-                <p class='tipText'>Tip - Each chat session you get a unique ID next to your Username </p>
+                    <p class='tipText'>Note - You can tell guest users from Members due to the 'guest' after their userName </p>
                 </section>
                 </div>
             </div>
